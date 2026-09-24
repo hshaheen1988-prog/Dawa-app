@@ -28,7 +28,7 @@ jobs:
           set -e
           if [ ! -d android ]; then
             A=android/app/src/main
-            mkdir -p $A/java/com/hamza/dawa $A/res/drawable $A/res/mipmap-anydpi-v26 $A/res/values
+            mkdir -p $A/java/com/hamza/dawa $A/res/drawable $A/res/mipmap-anydpi-v26 $A/res/values $A/res/layout $A/res/xml
             for f in build*.gradle; do
               if grep -q "apply false" "$f"; then cp "$f" android/build.gradle; else cp "$f" android/app/build.gradle; fi
             done
@@ -36,9 +36,13 @@ jobs:
             cp dawa.jks android/app/
             cp AndroidManifest.xml $A/
             cp *.java $A/java/com/hamza/dawa/
-            cp ic_launcher_background.xml ic_launcher_foreground.xml ic_stat.xml $A/res/drawable/
             cp ic_launcher.xml $A/res/mipmap-anydpi-v26/
+            for f in ic_launcher_background.xml ic_launcher_foreground.xml ic_stat.xml widget_bg.xml widget_btn.xml; do
+              if [ -f "$f" ]; then cp "$f" $A/res/drawable/; fi
+            done
             cp strings.xml styles.xml $A/res/values/
+            if [ -f widget_dose.xml ]; then cp widget_dose.xml $A/res/layout/; fi
+            if [ -f widget_info.xml ]; then cp widget_info.xml $A/res/xml/; fi
           fi
           mkdir -p android/app/src/main/assets/www
           cp index.html sw.js manifest.json icon.svg android/app/src/main/assets/www/
