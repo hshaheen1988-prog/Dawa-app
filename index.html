@@ -204,6 +204,23 @@ nav.tabs button.on { color: var(--brand); font-weight: 600; }
   display: flex; gap: 10px; align-items: center; font-size: 14px;
 }
 .alert-banner .btn { width: auto; }
+
+/* Schedule editor */
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg button { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 6px; font-size: 14px; font-weight: 600; color: var(--muted); }
+.seg button.on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+.wd { display: flex; flex-wrap: wrap; gap: 6px; }
+.wd button { flex: 1 0 calc(25% - 6px); border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 4px; font-size: 13px; color: var(--muted); }
+.wd button.on { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; }
+.pattern-row .p-lbl { flex: none; width: 70px; font-size: 14px; color: var(--muted); }
+.preview-card { padding: 12px; }
+.preview { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.pv { text-align: center; border-radius: 8px; padding: 4px 0; background: var(--brand-soft); color: var(--brand); }
+.pv.none { background: var(--bg); color: var(--muted); }
+.pv.is-today { outline: 2px solid var(--brand); outline-offset: -2px; }
+.pv-d { font-size: 10px; } .pv-n { font-size: 12px; opacity: .8; } .pv-a { font-size: 14px; font-weight: 700; }
+details > summary { list-style: revert; }
+.unit-hint { font-weight: 400; color: var(--muted); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -313,7 +330,19 @@ const T = {
     reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`,
     imported: 'تم الاستيراد', importFail: 'الملف غير صالح', saved: 'تم الحفظ', profileName: 'الاسم', editProfile: 'تعديل بياناتي',
     install: 'ثبّت التطبيق', installHint: 'من قائمة المتصفح اختر "إضافة إلى الشاشة الرئيسية"',
-    days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], needTime: 'أضف وقتاً واحداً على الأقل'
+    days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], needTime: 'أضف وقتاً واحداً على الأقل',
+    schedule: 'التكرار', modes: { daily: 'كل يوم', interval: 'كل عدة أيام', weekdays: 'أيام محددة', pattern: 'نمط متكرر' },
+    everyN: 'كل كم يوم؟', everyNLabel: n => n === 1 ? 'كل يوم' : n === 2 ? 'يوم بعد يوم' : `كل ${n} أيام`,
+    pickDays: 'اختر الأيام', needDay: 'اختر يوماً واحداً على الأقل',
+    patternTitle: 'النمط', patternHint: 'اكتب كمية كل يوم بالترتيب، ثم يعيد النمط نفسه. اكتب 0 ليوم بدون دواء.',
+    dayN: n => `اليوم ${n}`, addDay: '+ إضافة يوم', restDays: 'أيام استراحة بعد كل دورة', cycleOf: n => `يتكرر كل ${n} ${n === 1 ? 'يوم' : 'أيام'}`,
+    preview: 'معاينة الأيام القادمة', off: 'لا شيء', perDose: 'لكل جرعة',
+    doseChanges: 'تغيير الجرعة مع الوقت (اختياري)',
+    stock: 'المخزون (اختياري)', stockNow: 'الكمية المتوفرة', stockLow: 'نبهني عندما يتبقى',
+    stockLeft: n => `متبقي ${n}`, stockLowTitle: 'الدواء قارب على النفاد', stockLowBody: (m, n) => `${m}: متبقي ${n} فقط`,
+    needPattern: 'أدخل كمية أكبر من 0 ليوم واحد على الأقل',
+    takenAction: 'أخذته ✓', notifNative: 'التنبيهات ترن حتى لو كان التطبيق مغلقاً.',
+    notifBlockedNative: 'التنبيهات مقفلة لهذا التطبيق. افتح الإعدادات وفعّلها.', openSettings: 'فتح الإعدادات'
   },
   en: {
     appName: 'Dawa', welcome: 'Medication reminders for you and your family', yourName: 'Your name', phone: 'Phone number',
@@ -343,12 +372,25 @@ const T = {
     reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`,
     imported: 'Imported', importFail: 'Invalid file', saved: 'Saved', profileName: 'Name', editProfile: 'Edit my details',
     install: 'Install the app', installHint: 'From the browser menu choose "Add to Home screen"',
-    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], needTime: 'Add at least one time'
+    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], needTime: 'Add at least one time',
+    schedule: 'Frequency', modes: { daily: 'Every day', interval: 'Every few days', weekdays: 'Specific days', pattern: 'Repeating pattern' },
+    everyN: 'Every how many days?', everyNLabel: n => n === 1 ? 'Every day' : n === 2 ? 'Every other day' : `Every ${n} days`,
+    pickDays: 'Pick the days', needDay: 'Pick at least one day',
+    patternTitle: 'Pattern', patternHint: 'Enter the amount for each day in order; it then repeats. Use 0 for a day with no dose.',
+    dayN: n => `Day ${n}`, addDay: '+ Add day', restDays: 'Rest days after each cycle', cycleOf: n => `Repeats every ${n} day${n === 1 ? '' : 's'}`,
+    preview: 'Upcoming days', off: 'none', perDose: 'per dose',
+    doseChanges: 'Change dose over time (optional)',
+    stock: 'Stock (optional)', stockNow: 'Amount on hand', stockLow: 'Warn me when left',
+    stockLeft: n => `${n} left`, stockLowTitle: 'Running low', stockLowBody: (m, n) => `${m}: only ${n} left`,
+    needPattern: 'Enter an amount above 0 for at least one day',
+    takenAction: 'Taken ✓', notifNative: 'Reminders ring even when the app is closed.',
+    notifBlockedNative: 'Notifications are off for this app. Open settings to turn them on.', openSettings: 'Open settings'
   }
 };
 
 /* ================= State ================= */
 const KEY = 'dawa.v1';
+const NATIVE = !!(window.DawaNative && window.DawaNative.isNative);
 let S = load();
 let tab = 'today';
 
@@ -359,7 +401,30 @@ function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) return Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
   return blank();
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} syncNative(); }
+
+/* ---- Android app: hand the next 14 days of reminders to the system alarm clock ---- */
+function hashKey(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0; return (h & 0x3fffffff) || 1; }
+function buildAlarms() {
+  const out = [], now = Date.now();
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(today(), i);
+    for (const p of S.profiles) for (const s of slotsFor(p.id, d)) {
+      if (s.status) continue;
+      const at = new Date(`${d}T${s.time}:00`).getTime();
+      if (at <= now) continue;
+      out.push({ id: hashKey(s.key), at, key: s.key, title: t('reminderTitle')(p.name),
+        body: t('reminderBody')(s.med.name, `${fmtNum(amountOn(s.med, d))} ${s.med.unit}`), action: t('takenAction') });
+    }
+  }
+  return out.sort((a, b) => a.at - b.at).slice(0, 450);
+}
+let nativeTimer;
+function syncNative() {
+  if (!NATIVE) return;
+  clearTimeout(nativeTimer);
+  nativeTimer = setTimeout(() => { try { DawaNative.schedule(JSON.stringify(S.user ? buildAlarms() : [])); } catch (e) {} }, 300);
+}
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const t = k => T[S.lang][k];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -382,11 +447,38 @@ function fmtTime(hm) {
 
 /* ================= Domain ================= */
 function isActiveOn(med, date) { return med.start <= date && (!med.end || med.end >= date); }
-function amountOn(med, date) {
-  const st = [...med.stages].sort((a, b) => a.from.localeCompare(b.from));
+function daysBetween(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 86400000); }
+function sched(med) { return med.schedule || { mode: 'daily' }; }
+function stageAmount(med, date) {
+  const st = [...(med.stages || [])].sort((a, b) => a.from.localeCompare(b.from));
   let cur = st[0];
   for (const s of st) if (s.from <= date) cur = s;
-  return cur ? cur.amount : 1;
+  return cur ? +cur.amount : 1;
+}
+// Amount per dose time on a given date; 0 = no dose that day
+function amountOn(med, date) {
+  if (!isActiveOn(med, date)) return 0;
+  const sc = sched(med), n = daysBetween(med.start, date);
+  switch (sc.mode) {
+    case 'interval': return n % Math.max(1, sc.every || 1) === 0 ? stageAmount(med, date) : 0;
+    case 'weekdays': return (sc.weekdays || []).includes(new Date(date + 'T12:00:00').getDay()) ? stageAmount(med, date) : 0;
+    case 'pattern': {
+      const pat = sc.pattern || [1], len = pat.length + Math.max(0, sc.rest || 0);
+      const i = n % len;
+      return i < pat.length ? +pat[i] || 0 : 0;
+    }
+    default: return stageAmount(med, date);
+  }
+}
+function scheduleLabel(med) {
+  const sc = sched(med);
+  if (sc.mode === 'interval') return t('everyNLabel')(sc.every || 1);
+  if (sc.mode === 'weekdays') return (sc.weekdays || []).map(d => t('days')[d]).join(S.lang === 'ar' ? '، ' : ', ');
+  if (sc.mode === 'pattern') {
+    const len = sc.pattern.length + (sc.rest || 0);
+    return `${sc.pattern.map(fmtNum).join(' · ')}${sc.rest ? ` · ${t('off')}×${sc.rest}` : ''} — ${t('cycleOf')(len)}`;
+  }
+  return t('modes').daily;
 }
 function amountLabel(med, date) { return `${fmtNum(amountOn(med, date))} ${esc(med.unit)}`; }
 function fmtNum(n) { return Number.isInteger(+n) ? String(+n) : String(+n); }
@@ -395,7 +487,7 @@ const logKey = (medId, date, time) => `${medId}|${date}|${time}`;
 function slotsFor(profileId, date) {
   const out = [];
   for (const m of S.meds) {
-    if (m.profileId !== profileId || !isActiveOn(m, date)) continue;
+    if (m.profileId !== profileId || amountOn(m, date) <= 0) continue;
     for (const tm of m.times) out.push({ med: m, time: tm, key: logKey(m.id, date, tm), status: S.log[logKey(m.id, date, tm)]?.status });
   }
   return out.sort((a, b) => a.time.localeCompare(b.time));
@@ -478,8 +570,21 @@ function renderToday() {
 }
 
 function mark(key, status) {
+  const [medId, date] = key.split('|');
+  const med = S.meds.find(m => m.id === medId);
+  const was = S.log[key]?.status;
   if (status) S.log[key] = { status, at: new Date().toISOString() };
   else delete S.log[key];
+  // Stock follows "taken": subtract when taken, give back when undone
+  if (med && typeof med.stock === 'number') {
+    const amt = amountOn(med, date);
+    if (was !== 'taken' && status === 'taken') med.stock = Math.max(0, +(med.stock - amt).toFixed(2));
+    if (was === 'taken' && status !== 'taken') med.stock = +(med.stock + amt).toFixed(2);
+    if (status === 'taken' && med.stock <= (med.lowAt ?? 5) && S.notified['low|' + med.id] !== today()) {
+      S.notified['low|' + med.id] = today();
+      notify(t('stockLowTitle'), t('stockLowBody')(med.name, fmtNum(med.stock)), 'low-' + med.id);
+    }
+  }
   save(); render();
 }
 
@@ -490,14 +595,19 @@ function renderMeds() {
   const date = today();
   el.innerHTML = `<div class="stack">${meds.map(m => {
     const status = m.end && m.end < date ? t('ended') : m.start > date ? t('upcoming') : '';
-    const st = [...m.stages].sort((a, b) => a.from.localeCompare(b.from));
+    const isPattern = sched(m).mode === 'pattern';
+    const st = [...(m.stages || [])].sort((a, b) => a.from.localeCompare(b.from));
     let curIdx = 0; st.forEach((s, i) => { if (s.from <= date) curIdx = i; });
-    const stagesHtml = st.length > 1
+    const doseLine = isPattern ? '' : `${fmtNum(stageAmount(m, date))} ${esc(m.unit)} ${t('perDose')} · `;
+    const stagesHtml = !isPattern && st.length > 1
       ? `<ul class="stages">${st.map((s, i) => `<li class="${i === curIdx ? 'now' : ''}">${fmtDate(s.from)}: ${fmtNum(s.amount)} ${esc(m.unit)}${i === curIdx ? ` (${t('current')})` : ''}</li>`).join('')}</ul>`
       : '';
+    const low = typeof m.stock === 'number' && m.stock <= (m.lowAt ?? 5);
+    const stockHtml = typeof m.stock === 'number' ? ` <span class="badge ${low ? 'bad' : 'ok'}">${t('stockLeft')(fmtNum(m.stock))}</span>` : '';
     return `<div class="card med-card">
-      <div class="top"><div><div class="name" style="font-weight:600">${esc(m.name)} ${status ? `<span class="badge bad">${status}</span>` : ''}</div>
-        <div class="meta">${amountLabel(m, date)} · ${fmtDate(m.start)}${m.end ? ' → ' + fmtDate(m.end) : ''}</div></div>
+      <div class="top"><div><div class="name" style="font-weight:600">${esc(m.name)} ${status ? `<span class="badge bad">${status}</span>` : ''}${stockHtml}</div>
+        <div class="meta">${doseLine}${fmtDate(m.start)}${m.end ? ' → ' + fmtDate(m.end) : ''}</div>
+        <div class="meta"><b>${t('schedule')}:</b> ${esc(scheduleLabel(m))}${isPattern ? ` <span class="unit">(${esc(m.unit)})</span>` : ''}</div></div>
         <button class="btn ghost small" onclick="openMedForm('${m.id}')">${t('edit')}</button></div>
       <div class="times">${m.times.map(x => `<span>${fmtTime(x)}</span>`).join('')}</div>
       ${stagesHtml}
@@ -559,23 +669,68 @@ function openModal(html) { document.getElementById('sheet').innerHTML = html; do
 function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
 function openMedForm(id) {
-  const m = id ? S.meds.find(x => x.id === id) : { name: '', unit: t('units')[0], times: ['08:00'], start: today(), end: '', stages: [{ from: today(), amount: 1 }], notes: '' };
+  const blankMed = { name: '', unit: t('units')[0], times: ['08:00'], start: today(), end: '', stages: [{ from: today(), amount: 1 }], notes: '',
+    schedule: { mode: 'daily', every: 2, weekdays: [], pattern: [1], rest: 0 }, stock: null, lowAt: 5 };
+  const m = id ? S.meds.find(x => x.id === id) : blankMed;
+  const sc = Object.assign({ mode: 'daily', every: 2, weekdays: [], pattern: [1], rest: 0 }, m.schedule || {});
   const units = t('units'); const allUnits = units.includes(m.unit) ? units : [m.unit, ...units];
+  const modes = t('modes');
   openModal(`
     <h3>${id ? t('editMed') : t('addMed')}</h3>
-    <form id="medForm">
+    <form id="medForm" novalidate>
       <div class="field"><label>${t('medName')}</label><input name="name" required value="${esc(m.name)}"></div>
+      <div class="field"><label>${t('unit')}</label><select name="unit">${allUnits.map(u => `<option ${u === m.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></div>
+
+      <div class="field"><label>${t('schedule')}</label>
+        <div class="seg">${Object.keys(modes).map(k => `<button type="button" data-mode="${k}" class="${k === sc.mode ? 'on' : ''}">${modes[k]}</button>`).join('')}</div>
+        <input type="hidden" name="mode" value="${sc.mode}">
+      </div>
+
+      <div class="field mode-panel" data-for="interval">
+        <label>${t('everyN')}</label>
+        <input type="number" name="every" min="2" step="1" value="${sc.every || 2}" inputmode="numeric">
+      </div>
+
+      <div class="field mode-panel" data-for="weekdays">
+        <label>${t('pickDays')}</label>
+        <div class="wd">${[6, 0, 1, 2, 3, 4, 5].map(d => `<button type="button" data-wd="${d}" class="${(sc.weekdays || []).includes(d) ? 'on' : ''}">${t('days')[d]}</button>`).join('')}</div>
+      </div>
+
+      <div class="field mode-panel" data-for="pattern">
+        <label>${t('patternTitle')}</label>
+        <div class="hint" style="margin:0 0 8px">${t('patternHint')}</div>
+        <div id="patternList" class="stack" style="gap:8px">${(sc.pattern || [1]).map((v, i) => patternRow(v, i)).join('')}</div>
+        <button type="button" class="add-link" style="margin-top:8px" onclick="addPatternRow()">${t('addDay')}</button>
+        <div class="row" style="margin-top:10px"><label style="margin:0">${t('restDays')}</label>
+          <input type="number" name="rest" min="0" step="1" value="${sc.rest || 0}" inputmode="numeric" style="flex:none;width:90px"></div>
+      </div>
+
+      <div class="field mode-panel" data-for="daily interval weekdays">
+        <label>${t('stagesTitle')} <span class="unit-hint"></span></label>
+        <div id="stagesList" class="stack" style="gap:8px">${(m.stages && m.stages.length ? m.stages : [{ from: m.start, amount: 1 }]).map(stageRow).join('')}</div>
+        <details style="margin-top:8px" ${m.stages && m.stages.length > 1 ? 'open' : ''}><summary class="hint" style="cursor:pointer">${t('doseChanges')}</summary>
+          <div class="hint">${t('stagesHint')}</div>
+          <button type="button" class="add-link" style="margin-top:8px" onclick="addStageRow()">${t('addStage')}</button>
+        </details>
+      </div>
+
       <div class="field"><label>${t('times')}</label>
         <div id="timesList" class="stack" style="gap:8px">${m.times.map(timeRow).join('')}</div>
         <button type="button" class="add-link" style="margin-top:8px" onclick="addTimeRow()">${t('addTime')}</button></div>
-      <div class="field"><label>${t('unit')}</label><select name="unit">${allUnits.map(u => `<option ${u === m.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></div>
-      <div class="field"><label>${t('stagesTitle')}</label>
-        <div id="stagesList" class="stack" style="gap:8px">${m.stages.map(stageRow).join('')}</div>
-        <div class="hint">${t('stagesHint')}</div>
-        <button type="button" class="add-link" style="margin-top:8px" onclick="addStageRow()">${t('addStage')}</button></div>
+
       <div class="row field">
         <div><label>${t('startDate')}</label><input type="date" name="start" required value="${m.start}"></div>
         <div><label>${t('endDate')}</label><input type="date" name="end" value="${m.end || ''}"></div></div>
+
+      <div class="field card preview-card"><label>${t('preview')}</label><div id="preview" class="preview"></div></div>
+
+      <details class="field" ${typeof m.stock === 'number' ? 'open' : ''}><summary style="font-weight:600;cursor:pointer">${t('stock')}</summary>
+        <div class="row" style="margin-top:10px">
+          <div><div class="hint" style="margin:0 0 4px">${t('stockNow')}</div><input type="number" name="stock" min="0" step="0.5" value="${m.stock ?? ''}" inputmode="decimal"></div>
+          <div><div class="hint" style="margin:0 0 4px">${t('stockLow')}</div><input type="number" name="lowAt" min="0" step="1" value="${m.lowAt ?? 5}" inputmode="numeric"></div>
+        </div>
+      </details>
+
       <div class="field"><label>${t('notes')}</label><input name="notes" placeholder="${t('notesPh')}" value="${esc(m.notes)}"></div>
       <div class="stack">
         <button class="btn" type="submit">${t('save')}</button>
@@ -583,18 +738,108 @@ function openMedForm(id) {
         <button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button>
       </div>
     </form>`);
-  document.getElementById('medForm').onsubmit = e => {
+
+  const f = document.getElementById('medForm');
+  const syncMode = () => {
+    const mode = f.mode.value;
+    f.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+    f.querySelectorAll('.mode-panel').forEach(p => p.classList.toggle('hidden', !p.dataset.for.split(' ').includes(mode)));
+    f.querySelector('.unit-hint').textContent = `(${f.unit.value} ${t('perDose')})`;
+    updatePreview();
+  };
+  f.querySelectorAll('.seg button').forEach(b => b.onclick = () => { f.mode.value = b.dataset.mode; syncMode(); });
+  f.querySelectorAll('.wd button').forEach(b => b.onclick = () => { b.classList.toggle('on'); updatePreview(); });
+  f.addEventListener('input', updatePreview);
+  f.addEventListener('change', syncMode);
+  f.addEventListener('click', e => { if (e.target.closest('.x-btn, .add-link')) setTimeout(updatePreview); });
+  syncMode();
+
+  f.onsubmit = e => {
     e.preventDefault();
-    const f = e.target;
-    const times = [...new Set([...f.querySelectorAll('.t-in')].map(i => i.value).filter(Boolean))].sort();
-    if (!times.length) { toast(t('needTime')); return; }
-    const stages = [...f.querySelectorAll('.stage-row')].map(r => ({ from: r.querySelector('.s-from').value || f.start.value, amount: parseFloat(r.querySelector('.s-amt').value) || 1 }));
-    const data = { name: f.name.value.trim(), unit: f.unit.value, times, start: f.start.value, end: f.end.value, stages: stages.length ? stages : [{ from: f.start.value, amount: 1 }], notes: f.notes.value.trim() };
-    if (id) Object.assign(S.meds.find(x => x.id === id), data);
-    else S.meds.push({ id: uid(), profileId: S.active, ...data });
+    const r = readMedForm(f);
+    if (r.error) { toast(r.error); return; }
+    if (id) Object.assign(S.meds.find(x => x.id === id), r.data);
+    else S.meds.push({ id: uid(), profileId: S.active, ...r.data });
     save(); closeModal(); toast(t('saved')); render();
     if ('Notification' in window && Notification.permission === 'default') requestNotif();
   };
+}
+
+function readMedForm(f) {
+  const name = f.name.value.trim();
+  if (!name) return { error: t('medName') };
+  const times = [...new Set([...f.querySelectorAll('.t-in')].map(i => i.value).filter(Boolean))].sort();
+  if (!times.length) return { error: t('needTime') };
+  const start = f.start.value || today();
+  const mode = f.mode.value;
+  const schedule = { mode };
+  if (mode === 'interval') schedule.every = Math.max(2, parseInt(f.every.value) || 2);
+  if (mode === 'weekdays') {
+    schedule.weekdays = [...f.querySelectorAll('.wd button.on')].map(b => +b.dataset.wd).sort();
+    if (!schedule.weekdays.length) return { error: t('needDay') };
+  }
+  if (mode === 'pattern') {
+    schedule.pattern = [...f.querySelectorAll('.p-amt')].map(i => Math.max(0, parseFloat(i.value) || 0));
+    schedule.rest = Math.max(0, parseInt(f.rest.value) || 0);
+    if (!schedule.pattern.some(v => v > 0)) return { error: t('needPattern') };
+  }
+  const stages = [...f.querySelectorAll('.stage-row')].map(r => ({ from: r.querySelector('.s-from').value || start, amount: parseFloat(r.querySelector('.s-amt').value) || 1 }));
+  if (stages.length) stages[0].from = start > stages[0].from ? stages[0].from : start;
+  const stockVal = f.stock.value.trim();
+  return { data: {
+    name, unit: f.unit.value, times, start, end: f.end.value, schedule,
+    stages: stages.length ? stages : [{ from: start, amount: 1 }],
+    stock: stockVal === '' ? null : Math.max(0, parseFloat(stockVal) || 0), lowAt: Math.max(0, parseInt(f.lowAt.value) || 0),
+    notes: f.notes.value.trim()
+  } };
+}
+
+function updatePreview() {
+  const f = document.getElementById('medForm'), box = document.getElementById('preview');
+  if (!f || !box) return;
+  const r = readMedForm(f);
+  if (!r.data) {
+    if (r.error === t('needTime') || r.error === t('medName')) {
+      // still preview with a placeholder time/name
+      f.dataset.tmp = 1;
+    } else { box.innerHTML = `<div class="hint">${r.error}</div>`; return; }
+  }
+  const med = r.data || (() => {
+    const clone = { ...readMedFormLoose(f) }; return clone;
+  })();
+  const from = today() > med.start ? today() : med.start;
+  box.innerHTML = Array.from({ length: 14 }, (_, i) => {
+    const d = addDays(from, i), a = amountOn(med, d);
+    const dt = new Date(d + 'T12:00:00');
+    return `<div class="pv ${a > 0 ? '' : 'none'} ${d === today() ? 'is-today' : ''}">
+      <div class="pv-d">${t('days')[dt.getDay()]}</div><div class="pv-n">${dt.getDate()}</div>
+      <div class="pv-a">${a > 0 ? fmtNum(a) : '–'}</div></div>`;
+  }).join('');
+}
+function readMedFormLoose(f) {
+  const tmp = f.cloneNode(true);
+  if (!tmp.name.value.trim()) tmp.name.value = 'x';
+  if (![...tmp.querySelectorAll('.t-in')].some(i => i.value)) tmp.querySelector('#timesList')?.insertAdjacentHTML('beforeend', timeRow('08:00'));
+  // clone loses selected .on state for weekday buttons? (classes are cloned) and hidden values are cloned too
+  return readMedForm(tmp).data || { start: today(), schedule: { mode: 'daily' }, stages: [{ from: today(), amount: 1 }] };
+}
+function patternRow(v, i) {
+  return `<div class="row pattern-row">
+    <span class="p-lbl">${t('dayN')(i + 1)}</span>
+    <input type="number" class="p-amt" min="0" step="0.25" value="${v}" inputmode="decimal">
+    <button type="button" class="x-btn" onclick="removePatternRow(this)">×</button></div>`;
+}
+function addPatternRow() {
+  const rows = document.querySelectorAll('.pattern-row');
+  const last = rows[rows.length - 1]?.querySelector('.p-amt').value || 1;
+  document.getElementById('patternList').insertAdjacentHTML('beforeend', patternRow(last, rows.length));
+  updatePreview();
+}
+function removePatternRow(btn) {
+  if (document.querySelectorAll('.pattern-row').length <= 1) return;
+  btn.parentElement.remove();
+  document.querySelectorAll('.pattern-row .p-lbl').forEach((el, i) => el.textContent = t('dayN')(i + 1));
+  updatePreview();
 }
 function timeRow(v) { return `<div class="row"><input type="time" class="t-in" value="${v}" required><button type="button" class="x-btn" onclick="this.parentElement.remove()">×</button></div>`; }
 function addTimeRow() { document.getElementById('timesList').insertAdjacentHTML('beforeend', timeRow('20:00')); }
@@ -666,7 +911,12 @@ function openSettings() {
         <span>${t('language')}</span>
         <button class="btn ghost small" style="flex:none" onclick="toggleLang();openSettings()">${t('otherLang')}</button>
       </div>
-      <div class="card">
+      ${NATIVE ? `<div class="card">
+        <div class="row"><span>${t('notif')}: <b>${nativeNotifOk() ? t('notifOn') : t('notifOff')}</b></span>
+          ${nativeNotifOk() ? `<button class="btn ghost small" style="flex:none" onclick="testNotif()">${t('testNotif')}</button>`
+            : `<button class="btn small" style="flex:none" onclick="DawaNative.openNotificationSettings()">${t('openSettings')}</button>`}</div>
+        <div class="hint">${nativeNotifOk() ? t('notifNative') : t('notifBlockedNative')}</div>
+      </div>` : `<div class="card">
         <div class="row"><span>${t('notif')}: <b>${perm === 'granted' ? t('notifOn') : t('notifOff')}</b></span>
           ${perm === 'granted' ? `<button class="btn ghost small" style="flex:none" onclick="testNotif()">${t('testNotif')}</button>`
             : `<button class="btn small" style="flex:none" onclick="requestNotif().then(openSettings)">${t('enable')}</button>`}</div>
@@ -674,7 +924,7 @@ function openSettings() {
       </div>
       <div class="card">
         <label>${t('install')}</label><div class="hint" style="margin:0">${t('installHint')}</div>
-      </div>
+      </div>`}
       <div class="card">
         <label>${t('backup')}</label>
         <div class="hint" style="margin:0 0 10px">${t('backupHint')}</div>
@@ -696,6 +946,7 @@ function saveUser() {
 }
 function toggleLang() { S.lang = S.lang === 'ar' ? 'en' : 'ar'; save(); render(); }
 function exportData() {
+  if (NATIVE) { DawaNative.share(`dawa-backup-${today()}.json`, JSON.stringify(S)); return; }
   const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = `dawa-backup-${today()}.json`; a.click();
@@ -727,17 +978,20 @@ function toast(msg) {
 
 /* ================= Notifications ================= */
 let swReg = null;
-if ('serviceWorker' in navigator) {
+if (!NATIVE && 'serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(r => { swReg = r; }).catch(() => {});
   navigator.serviceWorker.addEventListener('message', e => {
     if (e.data?.type === 'mark') { S = load(); mark(e.data.key, e.data.status); }
   });
 }
+function nativeNotifOk() { try { return DawaNative.notificationsAllowed(); } catch (e) { return true; } }
 function updateNotifBanner() {
-  const show = 'Notification' in window && Notification.permission === 'default' && S.meds.length > 0;
+  const show = NATIVE ? (!nativeNotifOk() && S.meds.length > 0)
+    : ('Notification' in window && Notification.permission === 'default' && S.meds.length > 0);
   document.getElementById('notifBanner').classList.toggle('hidden', !show);
 }
 async function requestNotif() {
+  if (NATIVE) { if (!nativeNotifOk()) DawaNative.openNotificationSettings(); return; }
   if (!('Notification' in window)) return;
   try { await Notification.requestPermission(); } catch (e) {}
   if (Notification.permission === 'denied') toast(t('notifDenied'));
@@ -745,6 +999,12 @@ async function requestNotif() {
 }
 async function notify(title, body, tag, data) {
   beep();
+  if (NATIVE) {
+    // Dose reminders come from the system alarm; here only one-off notices go to the tray
+    if (!data) { try { DawaNative.notifyNow(title, body); } catch (e) {} }
+    toast(`${title} — ${body}`);
+    return;
+  }
   if (!('Notification' in window) || Notification.permission !== 'granted') { toast(`${title} — ${body}`); return; }
   const opts = { body, tag, icon: 'icon.svg', badge: 'icon.svg', requireInteraction: true, vibrate: [300, 150, 300], data,
     actions: data ? [{ action: 'taken', title: S.lang === 'ar' ? 'أخذته ✓' : 'Taken ✓' }] : [] };
@@ -805,12 +1065,22 @@ window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); rende
 // Opened from a notification's "Taken" button while the app was closed
 (() => {
   const k = new URLSearchParams(location.search).get('mark');
-  if (k && S.user) { S.log[k] = { status: 'taken', at: new Date().toISOString() }; save(); }
+  if (k && S.user && !S.log[k]) mark(k, 'taken');
   if (k) history.replaceState(null, '', location.pathname);
 })();
 
+// Hooks called by the Android app
+window.nativeMark = key => { S = load(); if (S.log[key]?.status !== 'taken') mark(key, 'taken'); tab = 'today'; render(); toast(t('saved')); };
+window.nativeResume = () => { S = load(); render(); checkReminders(); syncNative(); };
+window.nativeBack = () => {
+  if (!document.getElementById('modal').classList.contains('hidden')) { closeModal(); return true; }
+  if (tab !== 'today') { tab = 'today'; render(); return true; }
+  return false;
+};
+
 render();
 checkReminders();
+syncNative();
 setInterval(() => { checkReminders(); if (tab === 'today' && document.getElementById('modal').classList.contains('hidden')) render(); }, 30000);
 </script>
 </body>

@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+def runNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInteger()
+
+android {
+    namespace 'com.hamza.dawa'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.hamza.dawa"
+        minSdk 26
+        targetSdk 34
+        versionCode runNumber
+        versionName "1.0.${runNumber}"
+    }
+
+    // Fixed key so every new build installs as an update (keeps the user's data)
+    signingConfigs {
+        dawa {
+            storeFile file('dawa.jks')
+            storePassword 'dawa1234'
+            keyAlias 'dawa'
+            keyPassword 'dawa1234'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.dawa
+        }
+        debug {
+            signingConfig signingConfigs.dawa
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
