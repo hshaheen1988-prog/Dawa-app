@@ -266,6 +266,7 @@ details.fold[open] > summary { margin-bottom: 12px; }
 .inr-card { display: flex; gap: 12px; align-items: center; }
 .inr-chart { width: 100%; height: auto; display: block; direction: ltr; }
 .inr-pt { cursor: pointer; }
+.fam-hub .btn { font-size: 14px; padding: 12px 10px; }
 /* Interactions */
 .ix { border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 1.6; border: 1.5px solid var(--line); background: var(--card-2); }
 .ix.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
@@ -555,6 +556,22 @@ const T = {
     resetAll: 'مسح كل البيانات', confirmReset: 'سيُحذف كل شيء نهائياً. هل أنت متأكد؟', version: 'الإصدار',
     reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'أخذته ✓',
     days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], daysShort: ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
+    famHub: 'تنبيهات ومتابعة العائلة', famHubSub: 'شارك أدويتك مع شخص يتابعك، أو تابع شخصاً من عائلتك', famShareBtn: 'شارك أدويتي', famSharing: 'مشاركة', famFollowBtn2: 'تابع شخصاً',
+    famFollowSection: 'أشخاص تتابعهم', famOnPhone: 'ملفات على هذا الموبايل', famFollowing: 'متابَع', famLateN: n => `${n} لم تُؤخذ`, famSyncedAt: tm => `آخر تحديث ${tm}`,
+    famShareTitle: 'مشاركة أدويتي', famShareSub: 'اللي بتابعك بشوف جرعاتك وبوصله تنبيه إذا نسيت', famYourCode: 'كود المتابعة', famCodeHint: 'ابعته للشخص اللي بدك إياه يتابعك',
+    famSendCode: 'إرسال الكود', famFollowers: 'الأشخاص اللي بتابعوك', famNoFollowers: 'لسا ما حدا دخل الكود', famShareExplain: 'بعد التفعيل بيطلعلك كود من 6 حروف. أي شخص بيدخله بتطبيق دوائي بصير يشوف الأدوية اللي بتختارها تحت، ومين أخذ ومين لأ.',
+    famStartShare: 'تفعيل المشاركة', famWhichMeds: 'الأدوية المشاركة', famStop: 'إيقاف المشاركة', famStopQ: 'إيقاف المشاركة؟ كل المتابعين رح يتوقفوا عن رؤية أدويتك، والكود القديم ما عاد يشتغل.',
+    famPrivacy: 'بس الأدوية اللي بتختارها بتنشارك، ومش أي حدا بيقدر يشوفها: لازم يكون معه الكود. بتقدر تشيل أي متابع بأي وقت.', famRemoveQ: 'إزالة هذا المتابع؟',
+    famSharingOn: 'تم تفعيل المشاركة ✓', famSharingOff: 'تم إيقاف المشاركة', famInvite: (n, c) => `${n} بدعوك تتابع أدويته على تطبيق دوائي.\nادخل على العائلة ← تابع شخصاً، واكتب الكود: ${c}`,
+    famFollowTitle: 'تابع شخصاً من العائلة', famFollowSub: 'اكتب الكود اللي وصلك منه', famFollowBtn: 'متابعة', famFollowHint: 'بعد المتابعة بتشوف أدويته وجرعاته اليوم، وبتختار لكل دواء: تذكير بموعده، أو تنبيه إذا ما انأخذ.',
+    famBadCode: 'الكود غير صحيح — تأكد من الحروف الستة', famOwnCode: 'هذا كودك أنت 🙂', famNoAccess: 'ما عندك صلاحية — ممكن تكون المشاركة توقفت', famOffline: 'بدها إنترنت — تأكد من الاتصال وجرّب مرة ثانية',
+    famError: 'صار خطأ', famAlready: 'أنت بتتابع هذا الشخص', famJoined: n => `صرت تتابع ${n} ✓`, famLeave: 'إلغاء المتابعة', famLeaveQ: n => `إلغاء متابعة ${n}؟`,
+    famRemoved: 'توقفت هذه المتابعة (أوقف المشاركة أو أزالك)', famNotTaken: 'لم تُؤخذ', famGive: 'أعطيته ✓', famGiven: 'تم التسجيل ووصل لموبايله ✓',
+    famAlerts: 'التنبيهات لكل دواء', famRemind: 'ذكّرني بموعده', famMissed: 'نبّهني إذا ما انأخذ', famMissAfter: 'متى أعتبر الجرعة فائتة؟', famMin: n => `بعد ${n} دقيقة`,
+    famBrowserNote: 'التنبيهات بالخلفية تعمل على تطبيق الأندرويد.', famSynced: n => `وصلت ${n} تحديثات من العائلة`,
+    famRemindTitle: n => `💊 موعد دواء ${n}`, famRemindSpeech: n => `حان موعد دواء ${n}`, famMissedTitle: n => `⚠️ ${n} لم يسجّل دواءه`,
+    famMissedBody: (m, tm) => `${m} — موعدها كان ${tm}. تواصل معه للتأكد.`, famUnknownBody: (m, tm) => `ما قدرنا نتأكد إذا انأخذ ${m} (موعدها ${tm}) — تأكد من الإنترنت أو تواصل معه.`,
+    loading: 'جاري التحميل…',
     rPeriod: 'الفترة', rDays: d => d === 7 ? 'آخر 7 أيام' : `آخر ${d} يوماً`, rLabs: 'تضمين فحوصات المختبر', rLabsTitle: 'فحوصات المختبر', rLabsHint: 'آخر 5 قراءات INR مع رسم بياني',
     rLabsNone: 'لا توجد فحوصات مسجّلة بعد (سجّلها من متابعة INR)', rPdf: 'تصدير PDF', rText: 'مشاركة كنص (واتساب…)',
     rPdfHint: 'عند الضغط على "تصدير PDF" تفتح شاشة الطباعة: اختر "حفظ بصيغة PDF" ثم زر التنزيل.', rAdhN: d => `الالتزام خلال آخر ${d} ${d === 7 ? 'أيام' : 'يوماً'}`,
@@ -648,6 +665,22 @@ const T = {
     resetAll: 'Erase all data', confirmReset: 'Everything will be deleted permanently. Are you sure?', version: 'Version',
     reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'Taken ✓',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], daysShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+    famHub: 'Family alerts & follow-up', famHubSub: 'Share your medicines with someone who follows you, or follow a family member', famShareBtn: 'Share my medicines', famSharing: 'Sharing', famFollowBtn2: 'Follow someone',
+    famFollowSection: 'People you follow', famOnPhone: 'Profiles on this phone', famFollowing: 'following', famLateN: n => `${n} not taken`, famSyncedAt: tm => `Updated ${tm}`,
+    famShareTitle: 'Share my medicines', famShareSub: 'Followers see your doses and get alerted if you forget', famYourCode: 'Follow code', famCodeHint: 'Send it to the person who should follow you',
+    famSendCode: 'Send code', famFollowers: 'Your followers', famNoFollowers: 'Nobody has entered the code yet', famShareExplain: "You'll get a 6-letter code. Anyone who enters it in Dawa sees the medicines you choose below and whether each dose was taken.",
+    famStartShare: 'Turn on sharing', famWhichMeds: 'Shared medicines', famStop: 'Stop sharing', famStopQ: "Stop sharing? Followers won't see your medicines anymore and the old code stops working.",
+    famPrivacy: 'Only the medicines you choose are shared, and only people with the code can see them. You can remove a follower any time.', famRemoveQ: 'Remove this follower?',
+    famSharingOn: 'Sharing is on ✓', famSharingOff: 'Sharing stopped', famInvite: (n, c) => `${n} invites you to follow their medicines on Dawa.\nOpen Family → Follow someone, and enter the code: ${c}`,
+    famFollowTitle: 'Follow a family member', famFollowSub: 'Enter the code they sent you', famFollowBtn: 'Follow', famFollowHint: "You'll see their medicines and today's doses, and choose per medicine: a reminder at dose time, or an alert if it isn't taken.",
+    famBadCode: 'Wrong code — check the 6 characters', famOwnCode: "That's your own code 🙂", famNoAccess: 'No access — sharing may have stopped', famOffline: 'Needs internet — check your connection and try again',
+    famError: 'Something went wrong', famAlready: 'You already follow this person', famJoined: n => `You now follow ${n} ✓`, famLeave: 'Unfollow', famLeaveQ: n => `Unfollow ${n}?`,
+    famRemoved: 'This follow ended (sharing stopped or you were removed)', famNotTaken: 'Not taken', famGive: 'Given ✓', famGiven: 'Logged and sent to their phone ✓',
+    famAlerts: 'Alerts per medicine', famRemind: 'Remind me', famMissed: 'Alert if missed', famMissAfter: 'Count a dose as missed after', famMin: n => `${n} min`,
+    famBrowserNote: 'Background alerts work in the Android app.', famSynced: n => `${n} updates from family`,
+    famRemindTitle: n => `💊 ${n}'s medicine time`, famRemindSpeech: n => `It's time for ${n}'s medicine`, famMissedTitle: n => `⚠️ ${n} hasn't logged a dose`,
+    famMissedBody: (m, tm) => `${m} — due at ${tm}. Check in with them.`, famUnknownBody: (m, tm) => `Couldn't confirm whether ${m} (due ${tm}) was taken — check the internet or call them.`,
+    loading: 'Loading…',
     rPeriod: 'Period', rDays: d => `Last ${d} days`, rLabs: 'Include lab tests', rLabsTitle: 'Lab tests', rLabsHint: 'Last 5 INR readings with a chart',
     rLabsNone: 'No lab results logged yet (add them in INR tracking)', rPdf: 'Export PDF', rText: 'Share as text (WhatsApp…)',
     rPdfHint: 'Export PDF opens the print screen: choose "Save as PDF", then the download button.', rAdhN: d => `Adherence, last ${d} days`,
@@ -736,7 +769,8 @@ function load() {
   try { const raw = localStorage.getItem(KEY); if (raw) return migrate(JSON.parse(raw)); } catch (e) {}
   return blank();
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} syncNative(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} syncNative(); if (S.family?.code && !famSyncing) famSchedulePush(); }
+let famSyncing = false;
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const t = k => T[S.lang][k];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1000,6 +1034,7 @@ function doseCard(s, date, td, now) {
   else if (late) tags.push(`<span class="tag warn">${t('late')}</span>`);
   if (missed) tags.push(`<span class="tag bad">${t('missedN')}</span>`);
   if (s.status === 'taken' && s.log?.at) tags.push(`<span class="tag ok">${t('takeAt')(fmtClock(s.log.at))}</span>`);
+  if (s.log?.by) tags.push(`<span class="tag brand">👤 ${esc(s.log.by)}</span>`);
   if (s.status === 'skipped') tags.push(`<span class="tag bad">${t('skipped')}</span>`);
   let right;
   if (s.status) {
@@ -1023,7 +1058,7 @@ function mark(key, status, quiet) {
   const med = S.meds.find(m => m.id === medId);
   const was = S.log[key]?.status;
   if (status) S.log[key] = { status, at: new Date().toISOString() };
-  else delete S.log[key];
+  else { delete S.log[key]; if (was && S.family) FAM().undo[key] = new Date().toISOString(); }
   delete S.snoozes[key];
   if (med && typeof med.stock === 'number') {
     const amt = amountOn(med, date);
@@ -1983,6 +2018,354 @@ function openMonth(ym) {
 }
 
 /* =====================================================================
+   Family sharing (Supabase): the patient shares chosen medicines,
+   followers see them live, get reminders / missed-dose alerts, and can
+   mark a dose as given. Everything goes through fam_* server functions.
+   ===================================================================== */
+const SUPA_URL = 'https://iyttkreqycczhiuxfuet.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5dHRrcmVxeWNjemhpdXhmdWV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMjI3NTUsImV4cCI6MjEwNTc5ODc1NX0.e3I1DQo-OQ69AodjFEP1KBOIWbJPRwwsgOOKcn6hxnA';
+function FAM() {
+  const F = (S.family ||= { id: null, secret: null, code: null, hide: {}, since: null, following: [], undo: {} });
+  F.hide ||= {}; F.undo ||= {}; F.following ||= [];
+  return F;
+}
+const famOn = () => !!(FAM().code || FAM().following.length);
+
+async function rpc(fn, args) {
+  const r = await fetch(`${window.DAWA_SUPA_URL || SUPA_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  const txt = await r.text();
+  let data = null; try { data = txt ? JSON.parse(txt) : null; } catch (e) { data = txt; }
+  if (!r.ok) { const e = new Error((data && (data.message || data.hint)) || ('HTTP ' + r.status)); e.status = r.status; throw e; }
+  return data;
+}
+async function famCreds() {
+  const F = FAM();
+  if (!F.id) {
+    const d = await rpc('fam_register', { p_name: S.user.name, p_phone: S.user.phone || '' });
+    F.id = d.id; F.secret = d.secret; save();
+  }
+  return { p_id: F.id, p_secret: F.secret };
+}
+function famError(e) {
+  const m = String(e && e.message || e);
+  if (/invalid code/.test(m)) return t('famBadCode');
+  if (/own code/.test(m)) return t('famOwnCode');
+  if (/no access/.test(m)) return t('famNoAccess');
+  if (/Failed to fetch|NetworkError|Load failed|network/i.test(m)) return t('famOffline');
+  return t('famError') + ' (' + m.slice(0, 60) + ')';
+}
+let famBusy = false;
+async function famRun(fn, okMsg) {
+  if (famBusy) return;
+  famBusy = true;
+  try { const r = await fn(); if (okMsg) toast(okMsg); return r; }
+  catch (e) { toast(famError(e)); haptic([30, 50, 30]); }
+  finally { famBusy = false; }
+}
+
+/* ---------- patient: what is shared ---------- */
+const famShared = m => !isPrn(m) && !FAM().hide[m.id];
+function famSnapshot() {
+  const td = today(), meds = S.meds.filter(m => famShared(m) && (!m.end || m.end >= addDays(td, -7)));
+  const slots = [];
+  for (let i = -7; i <= 13; i++) {
+    const d = addDays(td, i);
+    for (const p of S.profiles) for (const s of slotsFor(p.id, d)) {
+      if (!famShared(s.med)) continue;
+      slots.push({ k: s.key, d, t: s.time, m: s.med.id, a: s.amount });
+    }
+  }
+  return {
+    v: 1, name: S.user.name, at: new Date().toISOString(),
+    meds: meds.map(m => ({ id: m.id, name: m.name, unit: m.unit, meal: m.meal || 'none', color: m.color, shape: m.shape,
+      person: S.profiles.find(p => p.id === m.profileId)?.name || '', notes: m.notes || '', paused: !!m.paused })),
+    slots
+  };
+}
+function famMarksOut(snapshot) {
+  const F = FAM(), out = [];
+  for (const sl of snapshot.slots) {
+    const l = S.log[sl.k];
+    if (l) out.push({ k: sl.k, s: l.status, at: l.at });
+    else if (F.undo[sl.k]) out.push({ k: sl.k, s: 'none', at: F.undo[sl.k] });
+  }
+  return out;
+}
+let famPushTimer = null;
+function famSchedulePush(delay = 2500) {
+  if (!FAM().code) return;
+  clearTimeout(famPushTimer);
+  famPushTimer = setTimeout(() => famPush().catch(() => {}), delay);
+}
+async function famPush() {
+  const F = FAM(); if (!F.code) return;
+  const snap = famSnapshot();
+  await rpc('fam_push', { ...(await famCreds()), p_snapshot: snap, p_marks: famMarksOut(snap) });
+  F.pushedAt = new Date().toISOString();
+}
+/** Marks made by followers ("mum gave dad the pill") flow back into this phone. */
+async function famPullOwn() {
+  const F = FAM(); if (!F.code) return;
+  const res = await rpc('fam_pull', { ...(await famCreds()), p_code: null, p_since: F.since });
+  let changed = 0;
+  for (const mk of res.marks || []) {
+    const local = S.log[mk.k];
+    if (local && local.at && new Date(local.at) >= new Date(mk.at)) continue;
+    if (!local && F.undo[mk.k] && new Date(F.undo[mk.k]) >= new Date(mk.at)) continue;
+    if (mk.s === 'none') { if (local) { delete S.log[mk.k]; changed++; } continue; }
+    if (local?.status === mk.s) continue;
+    if (mk.s === 'taken') markSilently(mk.k, mk.at); else S.log[mk.k] = { status: mk.s, at: mk.at };
+    if (mk.by && mk.by !== S.user.name) S.log[mk.k].by = mk.by;
+    changed++;
+  }
+  F.since = res.now;
+  if (changed) { save(); render(); toast(t('famSynced')(changed)); }
+}
+async function famStartSharing() {
+  await famRun(async () => {
+    const code = await rpc('fam_share', { ...(await famCreds()), p_patient_name: S.user.name });
+    FAM().code = code; FAM().since = null; save();
+    await famPush();
+  }, t('famSharingOn'));
+  openFamShare();
+}
+async function famStopSharing() {
+  if (!await ask(t('famStopQ'), t('famStop'))) return;
+  await famRun(async () => { await rpc('fam_stop_sharing', await famCreds()); FAM().code = null; save(); }, t('famSharingOff'));
+  openFamShare();
+}
+function famShareCode() {
+  const code = FAM().code, text = t('famInvite')(S.user.name, code);
+  if (NATIVE) { try { DawaNative.share(t('appName'), text); return; } catch (e) {} }
+  if (navigator.share) { navigator.share({ text }).catch(() => {}); return; }
+  navigator.clipboard?.writeText(text).then(() => toast(t('copied')));
+}
+async function openFamShare() {
+  const F = FAM(), td = today();
+  const meds = S.meds.filter(m => !isPrn(m) && (!m.end || m.end >= td));
+  const byPerson = S.profiles.map(p => ({ p, meds: meds.filter(m => m.profileId === p.id) })).filter(g => g.meds.length);
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:12px"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.users}</div>
+      <div class="grow"><h3 style="margin:0">${t('famShareTitle')}</h3><div class="muted" style="font-size:13px">${t('famShareSub')}</div></div></div>
+    ${F.code ? `
+      <div class="card" style="text-align:center;box-shadow:none;border:1.5px solid var(--line)">
+        <div class="muted" style="font-size:13px">${t('famYourCode')}</div>
+        <div class="num" style="font-size:36px;font-weight:900;letter-spacing:6px;color:var(--brand);direction:ltr">${F.code}</div>
+        <div class="muted" style="font-size:12px;margin-bottom:10px">${t('famCodeHint')}</div>
+        <button class="btn" onclick="famShareCode()">${I.upload.replace('<svg', '<svg width="18" height="18"')} ${t('famSendCode')}</button>
+      </div>
+      <div class="sec-title">${I.users}<span>${t('famFollowers')}</span></div>
+      <div id="famMembers" class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:4px 14px"><p class="muted" style="padding:10px 0">${t('loading')}</p></div>`
+    : `<div class="ix brand" style="margin-bottom:12px">${t('famShareExplain')}</div>
+       <button class="btn" onclick="famStartSharing()">${t('famStartShare')}</button>`}
+    <div class="sec-title">${I.pill}<span>${t('famWhichMeds')}</span></div>
+    <div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 14px">${byPerson.map(g => g.meds.map(m => `
+      <div class="set-row">${micon(m, 36)}<div class="body"><b>${esc(m.name)}</b>${S.profiles.length > 1 ? `<small>${esc(g.p.name)}</small>` : ''}</div>
+        <button class="tgl ${F.hide[m.id] ? '' : 'on'}" onclick="FAM().hide['${m.id}']=!FAM().hide['${m.id}'];save();famSchedulePush(300);openFamShare()"></button></div>`).join('')).join('') || `<p class="muted" style="padding:12px 0">${t('noMeds')}</p>`}</div>
+    ${F.code ? `<button class="btn danger" style="margin-top:16px" onclick="famStopSharing()">${t('famStop')}</button>` : ''}
+    <p class="muted" style="font-size:12px;margin-top:12px;line-height:1.6">🔒 ${t('famPrivacy')}</p>`);
+  if (F.code) {
+    try {
+      const list = await rpc('fam_members_of', await famCreds());
+      const box = document.getElementById('famMembers'); if (!box) return;
+      box.innerHTML = list.length ? list.map(x => `<div class="set-row"><span class="av" style="background:${AVATAR[(x.name || '?').length % AVATAR.length]}">${esc((x.name || '?').charAt(0))}</span>
+        <div class="body"><b>${esc(x.name || '—')}</b><small dir="ltr" style="text-align:start">${esc(x.phone || '')}</small></div>
+        <button class="b-more" onclick="famRemoveMember('${x.id}')" aria-label="${t('del')}">${I.trash}</button></div>`).join('')
+        : `<p class="muted" style="padding:10px 0">${t('famNoFollowers')}</p>`;
+    } catch (e) { const box = document.getElementById('famMembers'); if (box) box.innerHTML = `<p class="muted" style="padding:10px 0">${famError(e)}</p>`; }
+  }
+}
+async function famRemoveMember(id) {
+  if (!await ask(t('famRemoveQ'), t('del'))) return;
+  await famRun(async () => rpc('fam_remove_member', { ...(await famCreds()), p_member: id }), t('saved'));
+  openFamShare();
+}
+
+/* ---------- follower ---------- */
+function famFollowed(code) { return FAM().following.find(f => f.code === code); }
+async function famJoin(code) {
+  code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (code.length !== 6) { toast(t('famBadCode')); return; }
+  if (famFollowed(code)) { toast(t('famAlready')); return; }
+  const res = await famRun(async () => rpc('fam_join', { ...(await famCreds()), p_code: code }));
+  if (!res) return;
+  const f = { code: res.code, name: res.patient_name || '—', snapshot: null, marks: {}, since: null, missAfter: 30, alerts: {} };
+  FAM().following.push(f); save();
+  await famRun(() => famPullFollow(f));
+  toast(t('famJoined')(f.name));
+  closeModal(); tab = 'family'; render();
+}
+async function famPullFollow(f) {
+  try {
+    const res = await rpc('fam_pull', { ...(await famCreds()), p_code: f.code, p_since: f.since });
+    f.name = res.patient_name || f.name;
+    if (res.snapshot && res.snapshot.slots) f.snapshot = res.snapshot;
+    for (const mk of res.marks || []) {
+      const cur = f.marks[mk.k];
+      if (!cur || new Date(cur.at) <= new Date(mk.at)) f.marks[mk.k] = { s: mk.s, at: mk.at, by: mk.by };
+    }
+    f.since = res.now; f.syncedAt = new Date().toISOString(); f.removed = false;
+  } catch (e) {
+    if (/no access/.test(String(e.message))) f.removed = true; else throw e;
+  }
+}
+async function famLeave(code) {
+  const f = famFollowed(code); if (!f) return;
+  if (!await ask(t('famLeaveQ')(f.name), t('famLeave'))) return;
+  try { await rpc('fam_leave', { ...(await famCreds()), p_code: code }); } catch (e) {}
+  FAM().following = FAM().following.filter(x => x.code !== code); save(); closeModal(); render();
+}
+function famAlert(f, medId) { return Object.assign({ remind: false, missed: true }, f.alerts[medId] || {}); }
+function famSlotState(f, sl, td = today(), now = nowHM()) {
+  const mk = f.marks[sl.k];
+  if (mk && mk.s === 'taken') return 'taken';
+  if (mk && mk.s === 'skipped') return 'skipped';
+  if (sl.d < td || (sl.d === td && sl.t < now)) return 'late';
+  return 'pending';
+}
+async function famGive(code, key) {
+  const f = famFollowed(code); if (!f) return;
+  const now = new Date().toISOString();
+  await famRun(async () => {
+    await rpc('fam_mark', { ...(await famCreds()), p_code: code, p_key: key, p_status: 'taken', p_at: now });
+    f.marks[key] = { s: 'taken', at: now, by: S.user.name }; save(); render();
+  }, t('famGiven'));
+  if (!document.getElementById('modal').classList.contains('hidden')) openFamPerson(code);
+}
+function famPersonCard(f) {
+  const td = today(), now = nowHM();
+  if (f.removed) return `<div class="card" style="margin-bottom:12px"><b>${esc(f.name)}</b><div class="ix warn" style="margin-top:8px">${t('famRemoved')}</div>
+    <button class="btn ghost small" style="margin-top:10px" onclick="famLeave('${f.code}')">${t('famLeave')}</button></div>`;
+  const slots = (f.snapshot?.slots || []).filter(s => s.d === td).sort((a, b) => a.t.localeCompare(b.t));
+  const meds = Object.fromEntries((f.snapshot?.meds || []).map(m => [m.id, m]));
+  const done = slots.filter(s => famSlotState(f, s, td, now) === 'taken').length;
+  const late = slots.filter(s => famSlotState(f, s, td, now) === 'late').length;
+  return `<div class="card fam-person" onclick="openFamPerson('${f.code}')" style="cursor:pointer;margin-bottom:12px">
+    <div class="row"><span class="av" style="background:var(--brand)">${esc(f.name.charAt(0))}</span>
+      <div class="grow"><b>${esc(f.name)}</b> <span class="tag brand">${t('famFollowing')}</span>
+        <div class="muted" style="font-size:13px">${slots.length ? t('todayProgress')(done, slots.length) : t('noneToday')}${late ? ` · <b style="color:var(--bad)">${t('famLateN')(late)}</b>` : ''}</div></div>
+      <span class="muted" style="font-size:22px">›</span></div>
+    ${slots.length ? `<div class="mini-bar"><i style="width:${done / slots.length * 100}%"></i></div>` : ''}
+    <div class="muted" style="font-size:11px;margin-top:6px">${f.syncedAt ? t('famSyncedAt')(fmtClock(f.syncedAt)) : ''}</div></div>`;
+}
+function openFamPerson(code) {
+  const f = famFollowed(code); if (!f) return;
+  const td = today(), now = nowHM();
+  const meds = f.snapshot?.meds || [];
+  const medMap = Object.fromEntries(meds.map(m => [m.id, m]));
+  const slots = (f.snapshot?.slots || []).filter(s => s.d === td).sort((a, b) => a.t.localeCompare(b.t));
+  const stateTag = (st, mk) => st === 'taken' ? `<span class="tag ok">✓ ${mk?.at ? fmtClock(mk.at) : ''}${mk?.by && mk.by !== f.name ? ` · ${esc(mk.by)}` : ''}</span>`
+    : st === 'skipped' ? `<span class="tag bad">${t('skipped')}</span>` : st === 'late' ? `<span class="tag bad">${t('famNotTaken')}</span>` : `<span class="tag">${t('dayPending')}</span>`;
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:12px"><span class="av" style="background:var(--brand);width:48px;height:48px;font-size:20px">${esc(f.name.charAt(0))}</span>
+      <div class="grow"><h3 style="margin:0">${esc(f.name)}</h3><div class="muted" style="font-size:13px">${f.syncedAt ? t('famSyncedAt')(fmtClock(f.syncedAt)) : ''}</div></div>
+      <button class="b-more" onclick="famRefresh('${f.code}')" aria-label="refresh">${I.undo}</button></div>
+    <div class="sec-title">${I.clock}<span>${t('today')}</span></div>
+    ${slots.length ? `<div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 12px">${slots.map(sl => {
+      const m = medMap[sl.m] || { name: '?', unit: '' }, st = famSlotState(f, sl, td, now), mk = f.marks[sl.k];
+      return `<div class="set-row">${micon(m, 38)}<div class="body"><b>${esc(m.name)}</b>
+        <small style="color:var(--text)"><span class="num">${fmtTime(sl.t)}</span> · <b>${fmtNum(sl.a)} ${esc(m.unit)}</b>${m.meal && m.meal !== 'none' ? ` · ${t('meals')[m.meal]}` : ''}</small>
+        <div style="margin-top:4px">${stateTag(st, mk)}</div></div>
+        ${st === 'pending' || st === 'late' ? `<button class="b-soft" style="padding:8px 10px;font-size:13px" onclick="famGive('${f.code}','${sl.k}')">${t('famGive')}</button>` : ''}</div>`;
+    }).join('')}</div>` : `<p class="muted">${t('noneToday')}</p>`}
+    <div class="sec-title">${I.bell}<span>${t('famAlerts')}</span></div>
+    <div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 12px">${meds.map(m => {
+      const a = famAlert(f, m.id);
+      return `<div class="set-row" style="flex-wrap:wrap">${micon(m, 36)}<div class="body"><b>${esc(m.name)}</b></div>
+        <div style="width:100%;display:flex;gap:6px;margin-top:6px">
+          <button class="opt ${a.remind ? 'on' : ''}" style="flex:1" onclick="famToggleAlert('${f.code}','${m.id}','remind')">🔔 ${t('famRemind')}</button>
+          <button class="opt ${a.missed ? 'on' : ''}" style="flex:1" onclick="famToggleAlert('${f.code}','${m.id}','missed')">⚠️ ${t('famMissed')}</button></div></div>`;
+    }).join('') || `<p class="muted" style="padding:10px 0">${t('noMeds')}</p>`}</div>
+    <div class="field" style="margin-top:14px"><label class="lbl">${t('famMissAfter')}</label>
+      <div class="range">${[15, 30, 60].map(n => `<button class="${f.missAfter === n ? 'on' : ''}" onclick="famFollowed('${f.code}').missAfter=${n};save();openFamPerson('${f.code}')">${t('famMin')(n)}</button>`).join('')}</div></div>
+    ${NATIVE ? '' : `<p class="hint">${t('famBrowserNote')}</p>`}
+    <button class="btn danger" style="margin-top:8px" onclick="famLeave('${f.code}')">${t('famLeave')}</button>`);
+}
+function famToggleAlert(code, medId, k) {
+  const f = famFollowed(code); if (!f) return;
+  const a = famAlert(f, medId); a[k] = !a[k]; f.alerts[medId] = a;
+  haptic(8); save(); openFamPerson(code);
+}
+async function famRefresh(code) {
+  const f = famFollowed(code); if (!f) return;
+  await famRun(() => famPullFollow(f)); save(); render(); openFamPerson(code);
+}
+function openFamFollow() {
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:12px"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.shield}</div>
+      <div class="grow"><h3 style="margin:0">${t('famFollowTitle')}</h3><div class="muted" style="font-size:13px">${t('famFollowSub')}</div></div></div>
+    <div class="field"><input id="famCode" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters"
+      style="font-size:28px;font-weight:900;letter-spacing:8px;text-align:center;direction:ltr;text-transform:uppercase"></div>
+    <button class="btn" onclick="famJoin(document.getElementById('famCode').value)">${t('famFollowBtn')}</button>
+    <p class="muted" style="font-size:12px;margin-top:12px;line-height:1.6">${t('famFollowHint')}</p>`);
+  setTimeout(() => document.getElementById('famCode')?.focus(), 250);
+}
+
+/* ---------- sync loop ---------- */
+let famLastSync = 0;
+async function famSync(force) {
+  if (!S.user || !famOn()) return;
+  if (!force && Date.now() - famLastSync < 45000) return;
+  famLastSync = Date.now();
+  const F = FAM();
+  famSyncing = true;
+  try {
+    if (F.code) { await famPullOwn(); await famPush(); }
+    for (const f of F.following) await famPullFollow(f);
+    save();
+    if (tab === 'family' && document.getElementById('modal').classList.contains('hidden')) renderFamily();
+  } catch (e) { /* offline: try again later */ }
+  finally { famSyncing = false; }
+}
+
+/* ---------- follower alarms (Android) ---------- */
+function famAlarms() {
+  const out = [], now = Date.now(), td = today();
+  for (const f of FAM().following) {
+    if (f.removed || !f.snapshot) continue;
+    const meds = Object.fromEntries(f.snapshot.meds.map(m => [m.id, m]));
+    const groups = new Map();
+    for (const sl of f.snapshot.slots) {
+      if (sl.d < td || sl.d > addDays(td, 3)) continue;
+      const mk = f.marks[sl.k]; if (mk && (mk.s === 'taken' || mk.s === 'skipped')) continue;
+      const m = meds[sl.m]; if (!m || m.paused) continue;
+      const a = famAlert(f, m.id), at = new Date(`${sl.d}T${sl.t}:00`).getTime();
+      for (const kind of ['remind', 'missed']) {
+        if (!a[kind]) continue;
+        const when = kind === 'remind' ? at : at + f.missAfter * 60000;
+        if (when <= now) continue;
+        const gk = kind + '|' + when;
+        if (!groups.has(gk)) groups.set(gk, { kind, when, time: sl.t, items: [] });
+        groups.get(gk).items.push({ sl, m });
+      }
+    }
+    for (const g of groups.values()) {
+      const lines = g.items.map(x => `💊 ${x.m.name} — ${fmtNum(x.sl.a)} ${x.m.unit}`).join('\n');
+      const keys = g.items.map(x => x.sl.k);
+      if (g.kind === 'remind') {
+        out.push({ id: hashKey('fr|' + f.code + '|' + g.when), at: g.when, keys: keys.map(k => `F|${f.code}|${k}`).join(','),
+          title: t('famRemindTitle')(f.name), body: lines, person: f.name, timeLabel: fmtTime(g.time),
+          lblTaken: t('famGive'), lblSnooze: t('snooze10'), lblClose: t('close'), lblHeader: t('famRemindTitle')(f.name),
+          speech: S.voice ? `${t('famRemindSpeech')(f.name)}. ${g.items.map(x => `${x.m.name}، ${amountSpeech(x.sl.a, x.m.unit)}`).join('. ')}.` : '', lang: S.lang, voice: S.voice ? '1' : '' });
+      } else {
+        out.push({ id: hashKey('fc|' + f.code + '|' + g.when), at: g.when, kind: 'check', code: f.code, keys: keys.join(','),
+          title: t('famMissedTitle')(f.name), body: t('famMissedBody')(g.items.map(x => x.m.name).join(t('list')), fmtTime(g.time)),
+          alt: t('famUnknownBody')(g.items.map(x => x.m.name).join(t('list')), fmtTime(g.time)), person: f.name });
+      }
+    }
+  }
+  return out;
+}
+function famNativeConfig() {
+  const F = FAM();
+  return { url: window.DAWA_SUPA_URL || SUPA_URL, key: SUPA_KEY, id: F.id, secret: F.secret, code: F.code };
+}
+
+/* =====================================================================
    Stats
    ===================================================================== */
 function renderStats() {
@@ -2198,7 +2581,16 @@ function printReport() {
    ===================================================================== */
 function renderFamily() {
   const el = document.getElementById('view-family'), td = today();
-  el.innerHTML = `<div class="stack">${S.profiles.map(p => {
+  const F = FAM();
+  const famTop = `<div class="card fam-hub">
+      <div class="row" style="margin-bottom:12px"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.bell}</div>
+        <div class="grow"><b>${t('famHub')}</b><div class="muted" style="font-size:13px">${t('famHubSub')}</div></div></div>
+      <div class="row">
+        <button class="btn ${F.code ? 'soft' : ''} grow" onclick="openFamShare()">${F.code ? `✓ ${t('famSharing')} · <span class="num" style="direction:ltr">${F.code}</span>` : t('famShareBtn')}</button>
+        <button class="btn ghost grow" onclick="openFamFollow()">${t('famFollowBtn2')}</button></div></div>
+    ${F.following.length ? `<div class="sec-title">${I.shield}<span>${t('famFollowSection')}</span></div>${F.following.map(famPersonCard).join('')}` : ''}
+    <div class="sec-title">${I.users}<span>${t('famOnPhone')}</span></div>`;
+  el.innerHTML = famTop + `<div class="stack">${S.profiles.map(p => {
     const n = S.meds.filter(m => m.profileId === p.id).length, st = dayStats(p.id, td);
     return `<div class="card member" onclick="setActive('${p.id}');tab='today';render()" style="cursor:pointer">
       <span class="av" style="background:${p.color}">${esc(p.name.trim().charAt(0))}</span>
@@ -2455,6 +2847,7 @@ function buildAlarms() {
       key: g.slots[0].key, action: t('takenAction')
     };
   });
+  try { out.push(...famAlarms()); } catch (e) {}
   for (const p of S.profiles) {
     const r = S.inr[p.id];
     if (!r?.next) continue;
@@ -2471,7 +2864,7 @@ function applyPendingMarks() {
   let list = [];
   try { list = JSON.parse(DawaNative.takePendingMarks() || '[]'); } catch (e) { return; }
   let n = 0;
-  for (const item of list) for (const key of String(item.keys || '').split(',').filter(Boolean)) {
+  for (const item of list) for (const key of String(item.keys || '').split(',').filter(k => k && !k.startsWith('F|'))) {
     if (S.log[key]?.status === 'taken') continue;
     markSilently(key, item.at ? new Date(item.at).toISOString() : new Date().toISOString()); n++;
   }
@@ -2522,6 +2915,7 @@ function syncNative() {
   clearTimeout(nativeTimer);
   nativeTimer = setTimeout(() => {
     try { DawaNative.schedule(JSON.stringify(S.user ? buildAlarms() : [])); } catch (e) {}
+    try { if (nativeHas('setFamily')) DawaNative.setFamily(JSON.stringify(famNativeConfig())); } catch (e) {}
     try { if (nativeHas('setWidget')) DawaNative.setWidget(JSON.stringify(S.user ? widgetData() : { days: {}, items: [], labels: {} })); } catch (e) {}
   }, 300);
 }
@@ -2538,7 +2932,7 @@ document.getElementById('onboardForm').onsubmit = e => {
   haptic([20, 40, 20]); save(); render();
 };
 document.querySelectorAll('nav.tabs .tab').forEach(b => b.onclick = () => { tab = b.dataset.tab; haptic(8); render(); window.scrollTo(0, 0); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); checkReminders(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); checkReminders(); famSync(true); } });
 window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); render(); } });
 
 window.nativeMark = keys => {
@@ -2547,7 +2941,7 @@ window.nativeMark = keys => {
   save(); tab = 'today'; viewDate = null; render(); toast(t('doseLogged'));
 };
 window.nativeVoiceResult = r => { if (r === 'missing') toast(t('voiceMissing')); else if (r === 'noengine') toast(t('voiceNoEngine')); };
-window.nativeResume = () => { S = load(); applyPendingMarks(); render(); checkReminders(); syncNative(); };
+window.nativeResume = () => { S = load(); applyPendingMarks(); render(); checkReminders(); syncNative(); famSync(true); };
 window.nativeBack = () => {
   if (!document.getElementById('confirm').classList.contains('hidden')) { document.getElementById('confirmNo').click(); return true; }
   if (!document.getElementById('modal').classList.contains('hidden')) { closeModal(); return true; }
@@ -2567,8 +2961,10 @@ applyPendingMarks();
 render();
 checkReminders();
 syncNative();
+famSync(true);
 setInterval(() => {
   checkReminders();
+  famSync();
   if (tab === 'today' && document.getElementById('modal').classList.contains('hidden') && document.getElementById('confirm').classList.contains('hidden')) renderToday();
 }, 30000);
 </script>
