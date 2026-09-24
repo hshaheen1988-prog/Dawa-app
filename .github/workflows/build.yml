@@ -23,10 +23,26 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Copy the web app into the Android project
+      - name: Arrange files into the Android project
         run: |
+          set -e
+          if [ ! -d android ]; then
+            A=android/app/src/main
+            mkdir -p $A/java/com/hamza/dawa $A/res/drawable $A/res/mipmap-anydpi-v26 $A/res/values
+            for f in build*.gradle; do
+              if grep -q "apply false" "$f"; then cp "$f" android/build.gradle; else cp "$f" android/app/build.gradle; fi
+            done
+            cp settings.gradle gradle.properties android/
+            cp dawa.jks android/app/
+            cp AndroidManifest.xml $A/
+            cp *.java $A/java/com/hamza/dawa/
+            cp ic_launcher_background.xml ic_launcher_foreground.xml ic_stat.xml $A/res/drawable/
+            cp ic_launcher.xml $A/res/mipmap-anydpi-v26/
+            cp strings.xml styles.xml $A/res/values/
+          fi
           mkdir -p android/app/src/main/assets/www
           cp index.html sw.js manifest.json icon.svg android/app/src/main/assets/www/
+          find android -type f | sort
 
       - name: Build APK
         run: gradle -p android assembleRelease --no-daemon --stacktrace
