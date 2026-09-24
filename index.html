@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>دوائي</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root {
+  --bg: #f4f6f5;
+  --card: #ffffff;
+  --text: #17211f;
+  --muted: #5d6b68;
+  --line: #dfe5e3;
+  --brand: #0f766e;
+  --brand-soft: #e3f2f0;
+  --ok: #15803d;
+  --ok-soft: #e4f4e8;
+  --warn: #b45309;
+  --warn-soft: #fbf0e1;
+  --bad: #b91c1c;
+  --bad-soft: #fbe7e7;
+  --shadow: 0 1px 2px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1413; --card: #172120; --text: #e6eeec; --muted: #9aaba7; --line: #2a3634;
+    --brand: #2dd4bf; --brand-soft: #123330; --ok: #4ade80; --ok-soft: #13301d;
+    --warn: #fbbf24; --warn-soft: #33270f; --bad: #f87171; --bad-soft: #3a1717;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1413; --card: #172120; --text: #e6eeec; --muted: #9aaba7; --line: #2a3634;
+  --brand: #2dd4bf; --brand-soft: #123330; --ok: #4ade80; --ok-soft: #13301d;
+  --warn: #fbbf24; --warn-soft: #33270f; --bad: #f87171; --bad-soft: #3a1717;
+  --shadow: none;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); }
+body {
+  font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif;
+  font-size: 16px; line-height: 1.5; min-height: 100vh;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  -webkit-tap-highlight-color: transparent;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+
+/* Header */
+header {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--card); border-bottom: 1px solid var(--line);
+  padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top));
+}
+.head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 640px; margin: 0 auto; }
+.brand { font-weight: 700; font-size: 20px; color: var(--brand); }
+.hello { font-size: 13px; color: var(--muted); }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--card); display: grid; place-items: center;
+}
+.icon-btn svg { width: 20px; height: 20px; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; max-width: 640px; margin: 10px auto 0; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; border: 1px solid var(--line); background: var(--card);
+  padding: 6px 14px; border-radius: 999px; font-size: 14px;
+}
+.chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+:root[data-theme="dark"] .chip.on { color: #06201d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.on { color: #06201d; } }
+
+main { max-width: 640px; margin: 0 auto; padding: 16px; }
+h2 { font-size: 18px; margin-bottom: 12px; }
+.sub { color: var(--muted); font-size: 14px; }
+
+/* Cards */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; box-shadow: var(--shadow); }
+.stack { display: grid; gap: 12px; }
+
+.summary { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.ring { width: 64px; height: 64px; flex: none; }
+.ring circle { fill: none; stroke-width: 7; }
+.ring .track { stroke: var(--line); }
+.ring .fill { stroke: var(--brand); stroke-linecap: round; transition: stroke-dashoffset .4s; }
+.ring text { font-size: 13px; font-weight: 700; fill: var(--text); }
+.summary .big { font-size: 17px; font-weight: 600; }
+
+.dose { display: flex; align-items: center; gap: 12px; }
+.dose .time {
+  flex: none; min-width: 70px; text-align: center; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums;
+  background: var(--brand-soft); color: var(--brand); border-radius: 10px; padding: 8px 6px; white-space: nowrap;
+}
+.dose .info { flex: 1; min-width: 0; }
+.dose .name { font-weight: 600; overflow-wrap: anywhere; }
+.dose .amt { color: var(--muted); font-size: 14px; }
+.dose .acts { display: flex; gap: 6px; flex: none; }
+.btn-ok, .btn-skip {
+  border: none; border-radius: 10px; min-width: 44px; height: 44px; padding: 0 10px; font-weight: 600; font-size: 14px;
+}
+.btn-ok { background: var(--ok-soft); color: var(--ok); }
+.btn-skip { background: var(--bad-soft); color: var(--bad); }
+.dose.taken { opacity: .75; }
+.dose.late .time { background: var(--warn-soft); color: var(--warn); }
+.badge { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.undo { background: none; border: none; color: var(--muted); font-size: 13px; text-decoration: underline; padding: 4px; }
+
+.empty { text-align: center; padding: 32px 16px; color: var(--muted); }
+.empty .em { font-size: 40px; margin-bottom: 8px; }
+
+/* Buttons & forms */
+.btn {
+  border: none; border-radius: 12px; padding: 12px 18px; font-weight: 600;
+  background: var(--brand); color: #fff; width: 100%;
+}
+:root[data-theme="dark"] .btn { color: #06201d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #06201d; } }
+.btn.ghost { background: transparent; color: var(--brand) !important; border: 1px solid var(--line); }
+.btn.danger { background: var(--bad-soft); color: var(--bad) !important; }
+.btn.small { width: auto; padding: 8px 14px; font-size: 14px; }
+.row { display: flex; gap: 8px; align-items: center; }
+.row > * { flex: 1; }
+label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.field { margin-bottom: 14px; }
+.hint { font-size: 13px; color: var(--muted); margin-top: 4px; }
+input, select, textarea {
+  width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 11px 12px;
+}
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); outline-offset: 0; border-color: transparent; }
+input[type="time"], input[type="date"], input[type="tel"] { direction: ltr; text-align: start; }
+.x-btn { flex: none !important; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--bad); font-size: 20px; }
+.add-link { background: none; border: 1px dashed var(--line); border-radius: 10px; padding: 10px; width: 100%; color: var(--brand); font-weight: 600; }
+
+.med-card .top { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.med-card .meta { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.times { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.times span { background: var(--brand-soft); color: var(--brand); padding: 2px 10px; border-radius: 999px; font-size: 13px; }
+.stages { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.stages li { list-style: none; }
+.stages li.now { color: var(--text); font-weight: 600; }
+
+/* Bottom nav */
+nav.tabs {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+  background: var(--card); border-top: 1px solid var(--line);
+  display: flex; justify-content: space-around; padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+}
+nav.tabs button {
+  flex: 1; max-width: 120px; background: none; border: none; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; padding: 6px 0; border-radius: 10px;
+}
+nav.tabs button svg { width: 22px; height: 22px; }
+nav.tabs button.on { color: var(--brand); font-weight: 600; }
+
+.fab {
+  position: fixed; bottom: calc(84px + env(safe-area-inset-bottom)); inset-inline-end: max(16px, calc(50% - 304px));
+  width: 56px; height: 56px; border-radius: 18px; border: none; background: var(--brand); color: #fff;
+  font-size: 28px; box-shadow: 0 4px 14px rgba(15,118,110,.35); z-index: 9;
+}
+
+/* Modal */
+.modal { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  background: var(--card); width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto;
+  border-radius: 20px 20px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+}
+@media (min-width: 600px) { .modal { align-items: center; } .sheet { border-radius: 20px; } }
+.sheet h3 { font-size: 18px; margin-bottom: 16px; }
+
+/* Onboarding */
+.onboard { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.onboard .card { width: 100%; max-width: 420px; padding: 28px 20px; }
+.onboard .logo { width: 64px; height: 64px; margin: 0 auto 12px; display: block; }
+.onboard h1 { text-align: center; font-size: 26px; color: var(--brand); }
+.onboard p.lead { text-align: center; color: var(--muted); margin-bottom: 22px; }
+.lang-switch { display: flex; justify-content: center; margin-top: 16px; }
+
+/* Stats */
+.bars { display: flex; align-items: flex-end; gap: 8px; height: 140px; margin-top: 12px; }
+.bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.bar .col { width: 100%; max-width: 36px; background: var(--brand); border-radius: 6px 6px 2px 2px; min-height: 3px; }
+.bar .col.none { background: var(--line); }
+.bar .lbl { font-size: 12px; color: var(--muted); }
+.bar .pct { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.stat-row:last-child { border-bottom: none; }
+
+/* Toast / banner */
+.toast {
+  position: fixed; top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 12px; z-index: 100;
+  font-size: 14px; max-width: calc(100% - 32px); box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.alert-banner {
+  background: var(--warn-soft); color: var(--warn); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+  display: flex; gap: 10px; align-items: center; font-size: 14px;
+}
+.alert-banner .btn { width: auto; }
+</style>
+</head>
+<body>
+
+<!-- Onboarding -->
+<section id="onboard" class="onboard hidden">
+  <div class="card">
+    <img class="logo" src="icon.svg" alt="">
+    <h1 data-t="appName"></h1>
+    <p class="lead" data-t="welcome"></p>
+    <form id="onboardForm">
+      <div class="field">
+        <label for="obName" data-t="yourName"></label>
+        <input id="obName" required autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="obPhone" data-t="phone"></label>
+        <input id="obPhone" type="tel" required inputmode="tel" autocomplete="tel" placeholder="07XXXXXXXX" pattern="[0-9+ ]{8,15}">
+        <div class="hint" data-t="phoneHint"></div>
+      </div>
+      <button class="btn" type="submit" data-t="start"></button>
+    </form>
+    <div class="lang-switch"><button class="btn ghost small" type="button" onclick="toggleLang()" data-t="otherLang"></button></div>
+  </div>
+</section>
+
+<!-- App -->
+<div id="app" class="hidden">
+  <header>
+    <div class="head-row">
+      <div>
+        <div class="brand" data-t="appName"></div>
+        <div class="hello" id="hello"></div>
+      </div>
+      <button class="icon-btn" onclick="openSettings()" aria-label="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+    <div class="chips" id="profileChips"></div>
+  </header>
+
+  <main>
+    <div id="notifBanner" class="alert-banner hidden">
+      <span style="flex:1" data-t="enableNotifMsg"></span>
+      <button class="btn small" onclick="requestNotif()" data-t="enable"></button>
+    </div>
+    <section id="view-today"></section>
+    <section id="view-meds" class="hidden"></section>
+    <section id="view-family" class="hidden"></section>
+    <section id="view-stats" class="hidden"></section>
+  </main>
+
+  <button class="fab" id="fab" onclick="openMedForm()" aria-label="add">+</button>
+
+  <nav class="tabs">
+    <button data-tab="today" class="on">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span data-t="today"></span>
+    </button>
+    <button data-tab="meds">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7z"/><path d="m8.5 8.5 7 7"/></svg>
+      <span data-t="meds"></span>
+    </button>
+    <button data-tab="family">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 5.5 4.8"/></svg>
+      <span data-t="family"></span>
+    </button>
+    <button data-tab="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      <span data-t="stats"></span>
+    </button>
+  </nav>
+</div>
+
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ================= i18n ================= */
+const T = {
+  ar: {
+    appName: 'دوائي', welcome: 'تذكير بمواعيد الأدوية لك ولعائلتك', yourName: 'اسمك', phone: 'رقم الهاتف',
+    phoneHint: 'يُحفظ على جهازك فقط', start: 'ابدأ', otherLang: 'English',
+    today: 'اليوم', meds: 'أدويتي', family: 'العائلة', stats: 'الإحصائيات',
+    hello: n => `أهلاً ${n}`, dosesToday: (d, t) => `${d} من ${t} جرعات اليوم`,
+    allDone: 'أخذت كل جرعات اليوم', noDosesToday: 'لا توجد جرعات اليوم',
+    addFirst: 'أضف أول دواء بالضغط على +', taken: 'تم ✓', skipped: 'تم التخطي', take: 'أخذته', skip: 'تخطي', undo: 'تراجع',
+    late: 'متأخر', addMed: 'إضافة دواء', editMed: 'تعديل دواء', medName: 'اسم الدواء', unit: 'الوحدة',
+    units: ['حبة', 'ملعقة', 'مل', 'ملغ', 'قطرة', 'بخة', 'إبرة'], times: 'أوقات الجرعات', addTime: '+ إضافة وقت',
+    startDate: 'تاريخ البدء', endDate: 'تاريخ الانتهاء (اختياري)', stagesTitle: 'الجرعة',
+    stagesHint: 'للجرعات المتدرجة: أضف مرحلة جديدة بتاريخ بدايتها وكميتها', addStage: '+ إضافة مرحلة',
+    from: 'من تاريخ', amount: 'الكمية', notes: 'ملاحظات', notesPh: 'مثلاً: بعد الأكل', save: 'حفظ', cancel: 'إلغاء',
+    del: 'حذف', edit: 'تعديل', confirmDel: 'متأكد من الحذف؟', noMeds: 'لا توجد أدوية لهذا الشخص',
+    ended: 'انتهى', upcoming: 'لم يبدأ', current: 'الحالية',
+    addMember: 'إضافة فرد', memberName: 'الاسم', relation: 'صلة القرابة',
+    relations: ['أنا', 'الأب', 'الأم', 'الزوج/ة', 'ابن', 'ابنة', 'أخ', 'أخت', 'آخر'],
+    medsCount: n => `${n} دواء`, cantDelSelf: 'لا يمكن حذف ملفك الأساسي',
+    last7: 'آخر 7 أيام', adherence: 'نسبة الالتزام', totalTaken: 'جرعات مأخوذة', totalSkipped: 'جرعات متخطاة',
+    totalMissed: 'جرعات فائتة', noData: 'لا توجد بيانات بعد',
+    settings: 'الإعدادات', language: 'اللغة', notif: 'التنبيهات', notifOn: 'مفعّلة', notifOff: 'غير مفعّلة',
+    enable: 'تفعيل', testNotif: 'تجربة تنبيه', backup: 'نسخة احتياطية', exportData: 'تصدير البيانات', importData: 'استيراد البيانات',
+    backupHint: 'البيانات محفوظة على هذا الجهاز فقط. صدّر نسخة احتياطية بين فترة وأخرى.',
+    resetAll: 'مسح كل البيانات', confirmReset: 'سيتم حذف كل شيء نهائياً. متأكد؟', close: 'إغلاق',
+    enableNotifMsg: 'فعّل التنبيهات لتصلك تذكيرات الأدوية', notifDenied: 'التنبيهات مرفوضة من المتصفح. فعّلها من إعدادات المتصفح.',
+    notifNote: 'تصل التذكيرات أثناء فتح التطبيق أو بقائه في الخلفية. أبقِ التطبيق مفتوحاً (أو مثبتاً على الشاشة الرئيسية).',
+    reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`,
+    imported: 'تم الاستيراد', importFail: 'الملف غير صالح', saved: 'تم الحفظ', profileName: 'الاسم', editProfile: 'تعديل بياناتي',
+    install: 'ثبّت التطبيق', installHint: 'من قائمة المتصفح اختر "إضافة إلى الشاشة الرئيسية"',
+    days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], needTime: 'أضف وقتاً واحداً على الأقل'
+  },
+  en: {
+    appName: 'Dawa', welcome: 'Medication reminders for you and your family', yourName: 'Your name', phone: 'Phone number',
+    phoneHint: 'Saved on this device only', start: 'Start', otherLang: 'العربية',
+    today: 'Today', meds: 'Medicines', family: 'Family', stats: 'Stats',
+    hello: n => `Hi ${n}`, dosesToday: (d, t) => `${d} of ${t} doses today`,
+    allDone: 'All doses taken today', noDosesToday: 'No doses today',
+    addFirst: 'Tap + to add your first medicine', taken: 'Taken ✓', skipped: 'Skipped', take: 'Take', skip: 'Skip', undo: 'Undo',
+    late: 'Late', addMed: 'Add medicine', editMed: 'Edit medicine', medName: 'Medicine name', unit: 'Unit',
+    units: ['tablet', 'spoon', 'ml', 'mg', 'drop', 'puff', 'injection'], times: 'Dose times', addTime: '+ Add time',
+    startDate: 'Start date', endDate: 'End date (optional)', stagesTitle: 'Dose',
+    stagesHint: 'For tapering doses: add a stage with its start date and amount', addStage: '+ Add stage',
+    from: 'From', amount: 'Amount', notes: 'Notes', notesPh: 'e.g. after meals', save: 'Save', cancel: 'Cancel',
+    del: 'Delete', edit: 'Edit', confirmDel: 'Delete this?', noMeds: 'No medicines for this person',
+    ended: 'Ended', upcoming: 'Not started', current: 'current',
+    addMember: 'Add member', memberName: 'Name', relation: 'Relation',
+    relations: ['Me', 'Father', 'Mother', 'Spouse', 'Son', 'Daughter', 'Brother', 'Sister', 'Other'],
+    medsCount: n => `${n} medicine${n === 1 ? '' : 's'}`, cantDelSelf: "Your main profile can't be deleted",
+    last7: 'Last 7 days', adherence: 'Adherence', totalTaken: 'Doses taken', totalSkipped: 'Doses skipped',
+    totalMissed: 'Doses missed', noData: 'No data yet',
+    settings: 'Settings', language: 'Language', notif: 'Notifications', notifOn: 'On', notifOff: 'Off',
+    enable: 'Enable', testNotif: 'Test notification', backup: 'Backup', exportData: 'Export data', importData: 'Import data',
+    backupHint: 'Data lives on this device only. Export a backup now and then.',
+    resetAll: 'Erase all data', confirmReset: 'Everything will be deleted permanently. Sure?', close: 'Close',
+    enableNotifMsg: 'Turn on notifications to get medicine reminders', notifDenied: 'Notifications are blocked. Allow them in browser settings.',
+    notifNote: 'Reminders arrive while the app is open or in the background. Keep it open (or installed on your home screen).',
+    reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`,
+    imported: 'Imported', importFail: 'Invalid file', saved: 'Saved', profileName: 'Name', editProfile: 'Edit my details',
+    install: 'Install the app', installHint: 'From the browser menu choose "Add to Home screen"',
+    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], needTime: 'Add at least one time'
+  }
+};
+
+/* ================= State ================= */
+const KEY = 'dawa.v1';
+let S = load();
+let tab = 'today';
+
+function blank() {
+  return { lang: (navigator.language || 'ar').startsWith('en') ? 'en' : 'ar', user: null, profiles: [], active: null, meds: [], log: {}, notified: {} };
+}
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) return Object.assign(blank(), JSON.parse(raw)); } catch (e) {}
+  return blank();
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+const t = k => T[S.lang][k];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ================= Dates ================= */
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const nowHM = () => { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+function addDays(dateStr, n) { const d = new Date(dateStr + 'T12:00:00'); d.setDate(d.getDate() + n); return ymd(d); }
+function fmtDate(s) {
+  if (!s) return '';
+  return new Date(s + 'T12:00:00').toLocaleDateString(S.lang === 'ar' ? 'ar-JO' : 'en-GB', { day: 'numeric', month: 'short' });
+}
+function fmtTime(hm) {
+  const [h, m] = hm.split(':').map(Number);
+  const suffix = S.lang === 'ar' ? (h < 12 ? 'ص' : 'م') : (h < 12 ? 'AM' : 'PM');
+  return `${((h + 11) % 12) + 1}:${pad(m)} ${suffix}`;
+}
+
+/* ================= Domain ================= */
+function isActiveOn(med, date) { return med.start <= date && (!med.end || med.end >= date); }
+function amountOn(med, date) {
+  const st = [...med.stages].sort((a, b) => a.from.localeCompare(b.from));
+  let cur = st[0];
+  for (const s of st) if (s.from <= date) cur = s;
+  return cur ? cur.amount : 1;
+}
+function amountLabel(med, date) { return `${fmtNum(amountOn(med, date))} ${esc(med.unit)}`; }
+function fmtNum(n) { return Number.isInteger(+n) ? String(+n) : String(+n); }
+const logKey = (medId, date, time) => `${medId}|${date}|${time}`;
+
+function slotsFor(profileId, date) {
+  const out = [];
+  for (const m of S.meds) {
+    if (m.profileId !== profileId || !isActiveOn(m, date)) continue;
+    for (const tm of m.times) out.push({ med: m, time: tm, key: logKey(m.id, date, tm), status: S.log[logKey(m.id, date, tm)]?.status });
+  }
+  return out.sort((a, b) => a.time.localeCompare(b.time));
+}
+function profileName(id) { return S.profiles.find(p => p.id === id)?.name || ''; }
+
+/* ================= Render ================= */
+function applyLang() {
+  document.documentElement.lang = S.lang;
+  document.documentElement.dir = S.lang === 'ar' ? 'rtl' : 'ltr';
+  document.title = t('appName');
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+}
+
+function render() {
+  applyLang();
+  const hasUser = !!S.user;
+  document.getElementById('onboard').classList.toggle('hidden', hasUser);
+  document.getElementById('app').classList.toggle('hidden', !hasUser);
+  if (!hasUser) return;
+
+  document.getElementById('hello').textContent = t('hello')(S.user.name);
+  renderChips();
+  updateNotifBanner();
+
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  ['today', 'meds', 'family', 'stats'].forEach(v => document.getElementById('view-' + v).classList.toggle('hidden', v !== tab));
+  document.getElementById('fab').classList.toggle('hidden', tab === 'stats');
+  document.getElementById('fab').onclick = tab === 'family' ? () => openMemberForm() : () => openMedForm();
+
+  ({ today: renderToday, meds: renderMeds, family: renderFamily, stats: renderStats })[tab]();
+}
+
+function renderChips() {
+  const el = document.getElementById('profileChips');
+  el.classList.toggle('hidden', S.profiles.length < 2);
+  el.innerHTML = S.profiles.map(p =>
+    `<button class="chip ${p.id === S.active ? 'on' : ''}" onclick="setActive('${p.id}')">${esc(p.name)}</button>`).join('');
+}
+function setActive(id) { S.active = id; save(); render(); }
+
+function ring(pct) {
+  const r = 26, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
+  return `<svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
+    <circle class="track" cx="32" cy="32" r="${r}"/>
+    <circle class="fill" cx="32" cy="32" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle">${pct}%</text></svg>`;
+}
+
+function renderToday() {
+  const el = document.getElementById('view-today');
+  const date = today(), now = nowHM();
+  const slots = slotsFor(S.active, date);
+  if (!S.meds.some(m => m.profileId === S.active)) {
+    el.innerHTML = `<div class="card empty"><div class="em">💊</div><div>${t('addFirst')}</div></div>`;
+    return;
+  }
+  if (!slots.length) {
+    el.innerHTML = `<div class="card empty"><div class="em">🌿</div><div>${t('noDosesToday')}</div></div>`;
+    return;
+  }
+  const done = slots.filter(s => s.status === 'taken').length;
+  const pct = Math.round(done / slots.length * 100);
+  el.innerHTML = `
+    <div class="card summary">${ring(pct)}
+      <div><div class="big">${done === slots.length ? t('allDone') : t('dosesToday')(done, slots.length)}</div>
+      <div class="sub">${new Date().toLocaleDateString(S.lang === 'ar' ? 'ar-JO' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</div></div>
+    </div>
+    <div class="stack">${slots.map(s => {
+      const late = !s.status && s.time < now;
+      const right = s.status
+        ? `<div style="text-align:center"><span class="badge ${s.status === 'taken' ? 'ok' : 'bad'}">${t(s.status)}</span><br><button class="undo" onclick="mark('${s.key}',null)">${t('undo')}</button></div>`
+        : `<div class="acts"><button class="btn-ok" onclick="mark('${s.key}','taken')">${t('take')}</button><button class="btn-skip" onclick="mark('${s.key}','skipped')" aria-label="${t('skip')}">✕</button></div>`;
+      return `<div class="card dose ${s.status || ''} ${late ? 'late' : ''}">
+        <div class="time">${fmtTime(s.time)}</div>
+        <div class="info"><div class="name">${esc(s.med.name)}</div>
+          <div class="amt">${amountLabel(s.med, date)}${s.med.notes ? ' · ' + esc(s.med.notes) : ''}${late ? ` · <b style="color:var(--warn)">${t('late')}</b>` : ''}</div></div>
+        ${right}</div>`;
+    }).join('')}</div>`;
+}
+
+function mark(key, status) {
+  if (status) S.log[key] = { status, at: new Date().toISOString() };
+  else delete S.log[key];
+  save(); render();
+}
+
+function renderMeds() {
+  const el = document.getElementById('view-meds');
+  const meds = S.meds.filter(m => m.profileId === S.active);
+  if (!meds.length) { el.innerHTML = `<div class="card empty"><div class="em">💊</div><div>${t('noMeds')}</div></div>`; return; }
+  const date = today();
+  el.innerHTML = `<div class="stack">${meds.map(m => {
+    const status = m.end && m.end < date ? t('ended') : m.start > date ? t('upcoming') : '';
+    const st = [...m.stages].sort((a, b) => a.from.localeCompare(b.from));
+    let curIdx = 0; st.forEach((s, i) => { if (s.from <= date) curIdx = i; });
+    const stagesHtml = st.length > 1
+      ? `<ul class="stages">${st.map((s, i) => `<li class="${i === curIdx ? 'now' : ''}">${fmtDate(s.from)}: ${fmtNum(s.amount)} ${esc(m.unit)}${i === curIdx ? ` (${t('current')})` : ''}</li>`).join('')}</ul>`
+      : '';
+    return `<div class="card med-card">
+      <div class="top"><div><div class="name" style="font-weight:600">${esc(m.name)} ${status ? `<span class="badge bad">${status}</span>` : ''}</div>
+        <div class="meta">${amountLabel(m, date)} · ${fmtDate(m.start)}${m.end ? ' → ' + fmtDate(m.end) : ''}</div></div>
+        <button class="btn ghost small" onclick="openMedForm('${m.id}')">${t('edit')}</button></div>
+      <div class="times">${m.times.map(x => `<span>${fmtTime(x)}</span>`).join('')}</div>
+      ${stagesHtml}
+      ${m.notes ? `<div class="meta">${esc(m.notes)}</div>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderFamily() {
+  const el = document.getElementById('view-family');
+  el.innerHTML = `<div class="stack">${S.profiles.map(p => {
+    const n = S.meds.filter(m => m.profileId === p.id).length;
+    return `<div class="card med-card"><div class="top">
+      <div><div style="font-weight:600">${esc(p.name)}</div><div class="meta">${esc(p.relation)} · ${t('medsCount')(n)}</div></div>
+      <div class="row" style="flex:none;gap:6px">
+        <button class="btn ghost small" onclick="setActive('${p.id}');tab='today';render()">${t('today')}</button>
+        <button class="btn ghost small" onclick="openMemberForm('${p.id}')">${t('edit')}</button>
+      </div></div></div>`;
+  }).join('')}</div>`;
+}
+
+function renderStats() {
+  const el = document.getElementById('view-stats');
+  const date = today(), now = nowHM();
+  let taken = 0, skipped = 0, missed = 0;
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = addDays(date, -i);
+    const slots = slotsFor(S.active, d);
+    let dt = 0, due = 0;
+    for (const s of slots) {
+      const past = d < date || s.time <= now;
+      if (s.status === 'taken') { taken++; dt++; due++; }
+      else if (s.status === 'skipped') { skipped++; due++; }
+      else if (past) { missed++; due++; }
+    }
+    days.push({ d, pct: due ? Math.round(dt / due * 100) : null });
+  }
+  const total = taken + skipped + missed;
+  if (!total) { el.innerHTML = `<div class="card empty"><div class="em">📊</div><div>${t('noData')}</div></div>`; return; }
+  const pct = Math.round(taken / total * 100);
+  el.innerHTML = `
+    <div class="card summary">${ring(pct)}<div><div class="big">${t('adherence')}</div><div class="sub">${t('last7')}</div></div></div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="bars">${days.map(x => `<div class="bar">
+        <div class="pct">${x.pct === null ? '–' : x.pct + '%'}</div>
+        <div class="col ${x.pct === null ? 'none' : ''}" style="height:${x.pct === null ? 3 : Math.max(x.pct, 3)}%"></div>
+        <div class="lbl">${t('days')[new Date(x.d + 'T12:00:00').getDay()]}</div></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="stat-row"><span>${t('totalTaken')}</span><b style="color:var(--ok)">${taken}</b></div>
+      <div class="stat-row"><span>${t('totalSkipped')}</span><b style="color:var(--bad)">${skipped}</b></div>
+      <div class="stat-row"><span>${t('totalMissed')}</span><b style="color:var(--warn)">${missed}</b></div>
+    </div>`;
+}
+
+/* ================= Modals ================= */
+function openModal(html) { document.getElementById('sheet').innerHTML = html; document.getElementById('modal').classList.remove('hidden'); }
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+function openMedForm(id) {
+  const m = id ? S.meds.find(x => x.id === id) : { name: '', unit: t('units')[0], times: ['08:00'], start: today(), end: '', stages: [{ from: today(), amount: 1 }], notes: '' };
+  const units = t('units'); const allUnits = units.includes(m.unit) ? units : [m.unit, ...units];
+  openModal(`
+    <h3>${id ? t('editMed') : t('addMed')}</h3>
+    <form id="medForm">
+      <div class="field"><label>${t('medName')}</label><input name="name" required value="${esc(m.name)}"></div>
+      <div class="field"><label>${t('times')}</label>
+        <div id="timesList" class="stack" style="gap:8px">${m.times.map(timeRow).join('')}</div>
+        <button type="button" class="add-link" style="margin-top:8px" onclick="addTimeRow()">${t('addTime')}</button></div>
+      <div class="field"><label>${t('unit')}</label><select name="unit">${allUnits.map(u => `<option ${u === m.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('stagesTitle')}</label>
+        <div id="stagesList" class="stack" style="gap:8px">${m.stages.map(stageRow).join('')}</div>
+        <div class="hint">${t('stagesHint')}</div>
+        <button type="button" class="add-link" style="margin-top:8px" onclick="addStageRow()">${t('addStage')}</button></div>
+      <div class="row field">
+        <div><label>${t('startDate')}</label><input type="date" name="start" required value="${m.start}"></div>
+        <div><label>${t('endDate')}</label><input type="date" name="end" value="${m.end || ''}"></div></div>
+      <div class="field"><label>${t('notes')}</label><input name="notes" placeholder="${t('notesPh')}" value="${esc(m.notes)}"></div>
+      <div class="stack">
+        <button class="btn" type="submit">${t('save')}</button>
+        ${id ? `<button class="btn danger" type="button" onclick="deleteMed('${id}')">${t('del')}</button>` : ''}
+        <button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button>
+      </div>
+    </form>`);
+  document.getElementById('medForm').onsubmit = e => {
+    e.preventDefault();
+    const f = e.target;
+    const times = [...new Set([...f.querySelectorAll('.t-in')].map(i => i.value).filter(Boolean))].sort();
+    if (!times.length) { toast(t('needTime')); return; }
+    const stages = [...f.querySelectorAll('.stage-row')].map(r => ({ from: r.querySelector('.s-from').value || f.start.value, amount: parseFloat(r.querySelector('.s-amt').value) || 1 }));
+    const data = { name: f.name.value.trim(), unit: f.unit.value, times, start: f.start.value, end: f.end.value, stages: stages.length ? stages : [{ from: f.start.value, amount: 1 }], notes: f.notes.value.trim() };
+    if (id) Object.assign(S.meds.find(x => x.id === id), data);
+    else S.meds.push({ id: uid(), profileId: S.active, ...data });
+    save(); closeModal(); toast(t('saved')); render();
+    if ('Notification' in window && Notification.permission === 'default') requestNotif();
+  };
+}
+function timeRow(v) { return `<div class="row"><input type="time" class="t-in" value="${v}" required><button type="button" class="x-btn" onclick="this.parentElement.remove()">×</button></div>`; }
+function addTimeRow() { document.getElementById('timesList').insertAdjacentHTML('beforeend', timeRow('20:00')); }
+function stageRow(s) {
+  return `<div class="row stage-row">
+    <div><div class="hint" style="margin:0 0 4px">${t('from')}</div><input type="date" class="s-from" value="${s.from}"></div>
+    <div><div class="hint" style="margin:0 0 4px">${t('amount')}</div><input type="number" class="s-amt" min="0.25" step="0.25" value="${s.amount}" inputmode="decimal"></div>
+    <button type="button" class="x-btn" style="align-self:flex-end" onclick="if(document.querySelectorAll('.stage-row').length>1)this.parentElement.remove()">×</button></div>`;
+}
+function addStageRow() {
+  const rows = [...document.querySelectorAll('.stage-row')];
+  const last = rows[rows.length - 1];
+  const from = last ? addDays(last.querySelector('.s-from').value || today(), 7) : today();
+  const amt = last ? last.querySelector('.s-amt').value : 1;
+  document.getElementById('stagesList').insertAdjacentHTML('beforeend', stageRow({ from, amount: amt }));
+}
+function deleteMed(id) {
+  if (!confirm(t('confirmDel'))) return;
+  S.meds = S.meds.filter(m => m.id !== id);
+  for (const k of Object.keys(S.log)) if (k.startsWith(id + '|')) delete S.log[k];
+  save(); closeModal(); render();
+}
+
+function openMemberForm(id) {
+  const p = id ? S.profiles.find(x => x.id === id) : { name: '', relation: t('relations')[1] };
+  const isSelf = id && id === S.profiles[0]?.id;
+  const rels = t('relations'); const allRels = rels.includes(p.relation) ? rels : [p.relation, ...rels];
+  openModal(`
+    <h3>${id ? t('edit') : t('addMember')}</h3>
+    <form id="memberForm">
+      <div class="field"><label>${t('memberName')}</label><input name="name" required value="${esc(p.name)}"></div>
+      <div class="field"><label>${t('relation')}</label><select name="relation">${allRels.map(r => `<option ${r === p.relation ? 'selected' : ''}>${esc(r)}</option>`).join('')}</select></div>
+      <div class="stack">
+        <button class="btn" type="submit">${t('save')}</button>
+        ${id && !isSelf ? `<button class="btn danger" type="button" onclick="deleteMember('${id}')">${t('del')}</button>` : ''}
+        <button class="btn ghost" type="button" onclick="closeModal()">${t('cancel')}</button>
+      </div>
+    </form>`);
+  document.getElementById('memberForm').onsubmit = e => {
+    e.preventDefault();
+    const data = { name: e.target.name.value.trim(), relation: e.target.relation.value };
+    if (id) { Object.assign(S.profiles.find(x => x.id === id), data); if (isSelf) S.user.name = data.name; }
+    else { const np = { id: uid(), ...data }; S.profiles.push(np); S.active = np.id; }
+    save(); closeModal(); render();
+  };
+}
+function deleteMember(id) {
+  if (!confirm(t('confirmDel'))) return;
+  const medIds = S.meds.filter(m => m.profileId === id).map(m => m.id);
+  S.meds = S.meds.filter(m => m.profileId !== id);
+  for (const k of Object.keys(S.log)) if (medIds.some(mid => k.startsWith(mid + '|'))) delete S.log[k];
+  S.profiles = S.profiles.filter(p => p.id !== id);
+  if (S.active === id) S.active = S.profiles[0].id;
+  save(); closeModal(); render();
+}
+
+function openSettings() {
+  const perm = 'Notification' in window ? Notification.permission : 'denied';
+  openModal(`
+    <h3>${t('settings')}</h3>
+    <div class="stack">
+      <div class="card">
+        <label>${t('editProfile')}</label>
+        <div class="field"><input id="setName" value="${esc(S.user.name)}"></div>
+        <div class="field"><input id="setPhone" type="tel" value="${esc(S.user.phone)}"></div>
+        <button class="btn small" onclick="saveUser()">${t('save')}</button>
+      </div>
+      <div class="card row">
+        <span>${t('language')}</span>
+        <button class="btn ghost small" style="flex:none" onclick="toggleLang();openSettings()">${t('otherLang')}</button>
+      </div>
+      <div class="card">
+        <div class="row"><span>${t('notif')}: <b>${perm === 'granted' ? t('notifOn') : t('notifOff')}</b></span>
+          ${perm === 'granted' ? `<button class="btn ghost small" style="flex:none" onclick="testNotif()">${t('testNotif')}</button>`
+            : `<button class="btn small" style="flex:none" onclick="requestNotif().then(openSettings)">${t('enable')}</button>`}</div>
+        <div class="hint">${perm === 'denied' ? t('notifDenied') : t('notifNote')}</div>
+      </div>
+      <div class="card">
+        <label>${t('install')}</label><div class="hint" style="margin:0">${t('installHint')}</div>
+      </div>
+      <div class="card">
+        <label>${t('backup')}</label>
+        <div class="hint" style="margin:0 0 10px">${t('backupHint')}</div>
+        <div class="row">
+          <button class="btn ghost small" onclick="exportData()">${t('exportData')}</button>
+          <button class="btn ghost small" onclick="document.getElementById('importFile').click()">${t('importData')}</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json,.json" class="hidden" onchange="importData(this.files[0])">
+      </div>
+      <button class="btn danger" onclick="resetAll()">${t('resetAll')}</button>
+      <button class="btn ghost" onclick="closeModal()">${t('close')}</button>
+    </div>`);
+}
+function saveUser() {
+  const n = document.getElementById('setName').value.trim(), p = document.getElementById('setPhone').value.trim();
+  if (!n) return;
+  S.user.name = n; S.user.phone = p; S.profiles[0].name = n;
+  save(); toast(t('saved')); render();
+}
+function toggleLang() { S.lang = S.lang === 'ar' ? 'en' : 'ar'; save(); render(); }
+function exportData() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `dawa-backup-${today()}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function importData(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!d.user || !Array.isArray(d.profiles) || !Array.isArray(d.meds)) throw 0;
+      S = Object.assign(blank(), d); save(); closeModal(); toast(t('imported')); render();
+    } catch (e) { toast(t('importFail')); }
+  };
+  r.readAsText(file);
+}
+function resetAll() {
+  if (!confirm(t('confirmReset'))) return;
+  const lang = S.lang; S = blank(); S.lang = lang; save(); closeModal(); render();
+}
+
+let toastTimer;
+function toast(msg) {
+  document.querySelector('.toast')?.remove();
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; document.body.appendChild(el);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 2500);
+}
+
+/* ================= Notifications ================= */
+let swReg = null;
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(r => { swReg = r; }).catch(() => {});
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'mark') { S = load(); mark(e.data.key, e.data.status); }
+  });
+}
+function updateNotifBanner() {
+  const show = 'Notification' in window && Notification.permission === 'default' && S.meds.length > 0;
+  document.getElementById('notifBanner').classList.toggle('hidden', !show);
+}
+async function requestNotif() {
+  if (!('Notification' in window)) return;
+  try { await Notification.requestPermission(); } catch (e) {}
+  if (Notification.permission === 'denied') toast(t('notifDenied'));
+  render();
+}
+async function notify(title, body, tag, data) {
+  beep();
+  if (!('Notification' in window) || Notification.permission !== 'granted') { toast(`${title} — ${body}`); return; }
+  const opts = { body, tag, icon: 'icon.svg', badge: 'icon.svg', requireInteraction: true, vibrate: [300, 150, 300], data,
+    actions: data ? [{ action: 'taken', title: S.lang === 'ar' ? 'أخذته ✓' : 'Taken ✓' }] : [] };
+  try {
+    const reg = swReg || (navigator.serviceWorker && await navigator.serviceWorker.getRegistration());
+    if (reg) { await reg.showNotification(title, opts); return; }
+  } catch (e) {}
+  try { new Notification(title, opts); } catch (e) { toast(`${title} — ${body}`); }
+}
+function testNotif() { notify(t('appName'), '✓', 'test'); }
+function beep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.25, 0.5].forEach((d, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880 + i * 110; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.25, ctx.currentTime + d); g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d + 0.2);
+      o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + 0.22);
+    });
+  } catch (e) {}
+}
+
+function checkReminders() {
+  if (!S.user) return;
+  const date = today(), now = nowHM();
+  const [nh, nm] = now.split(':').map(Number); const nowMin = nh * 60 + nm;
+  let changed = false;
+  for (const p of S.profiles) {
+    for (const s of slotsFor(p.id, date)) {
+      if (s.status || S.notified[s.key]) continue;
+      const [h, m] = s.time.split(':').map(Number); const due = h * 60 + m;
+      if (nowMin >= due && nowMin - due <= 60) {
+        S.notified[s.key] = 1; changed = true;
+        notify(t('reminderTitle')(p.name), t('reminderBody')(s.med.name, `${fmtNum(amountOn(s.med, date))} ${s.med.unit}`), s.key, { key: s.key });
+      }
+    }
+  }
+  // prune old notified flags
+  for (const k of Object.keys(S.notified)) if (k.split('|')[1] < addDays(date, -2)) { delete S.notified[k]; changed = true; }
+  if (changed) { save(); if (tab === 'today') render(); }
+}
+
+/* ================= Wiring ================= */
+document.getElementById('onboardForm').onsubmit = e => {
+  e.preventDefault();
+  const name = document.getElementById('obName').value.trim();
+  const phone = document.getElementById('obPhone').value.trim();
+  if (!name || !phone) return;
+  const self = { id: uid(), name, relation: t('relations')[0] };
+  S.user = { name, phone, since: today() };
+  S.profiles = [self]; S.active = self.id;
+  save(); render();
+};
+document.querySelectorAll('nav.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); window.scrollTo(0, 0); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); checkReminders(); } });
+window.addEventListener('storage', e => { if (e.key === KEY) { S = load(); render(); } });
+
+// Opened from a notification's "Taken" button while the app was closed
+(() => {
+  const k = new URLSearchParams(location.search).get('mark');
+  if (k && S.user) { S.log[k] = { status: 'taken', at: new Date().toISOString() }; save(); }
+  if (k) history.replaceState(null, '', location.pathname);
+})();
+
+render();
+checkReminders();
+setInterval(() => { checkReminders(); if (tab === 'today' && document.getElementById('modal').classList.contains('hidden')) render(); }, 30000);
+</script>
+</body>
+</html>
