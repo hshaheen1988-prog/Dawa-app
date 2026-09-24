@@ -37,7 +37,7 @@ public final class Alarms {
     private static final String PREFS = "dawa_alarms";
     private static final int MAX_ALARMS = 450;
     private static final String[] EXTRA_KEYS = {"title", "body", "person", "timeLabel", "keys",
-            "lblTaken", "lblSnooze", "lblClose", "lblHeader", "speech", "lang", "voice"};
+            "lblTaken", "lblSnooze", "lblClose", "lblHeader", "speech", "lang", "voice", "kind", "code", "alt"};
 
     private Alarms() { }
 

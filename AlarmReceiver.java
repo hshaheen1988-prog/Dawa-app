@@ -14,6 +14,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         int id = x.getInt("id", 1);
         switch (action) {
             case Alarms.ACTION_FIRE:
+                if ("check".equals(x.getString("kind"))) {
+                    Family.check(context, x, goAsync());   // follower: was the dose taken?
+                    break;
+                }
                 if (Alarms.wantsVoice(x) && Alarms.canNotify(context)) {
                     try {
                         AlarmService.start(context, x);   // tone + spoken reminder
@@ -27,9 +31,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 break;
             case Alarms.ACTION_TAKEN:
                 AlarmService.stop(context);
-                Alarms.addPendingMarks(context, x.getString("keys"));
                 Alarms.cancel(context, id);
-                DoseWidget.markTaken(context, x.getString("keys"));
+                Family.handleTaken(context, x.getString("keys"), goAsync());
                 AlarmActivity.finishIfShowing();
                 MainActivity.refreshIfShowing();
                 break;

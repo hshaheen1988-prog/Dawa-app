@@ -76,8 +76,7 @@ public class DoseWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
         if (ACTION_TAKE.equals(intent.getAction())) {
             String keys = intent.getStringExtra("keys");
-            Alarms.addPendingMarks(context, keys);
-            markTaken(context, keys);
+            Family.handleTaken(context, keys, goAsync());
             MainActivity.refreshIfShowing();
         }
     }

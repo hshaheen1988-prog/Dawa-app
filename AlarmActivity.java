@@ -131,8 +131,7 @@ public class AlarmActivity extends Activity {
         if (!keys.isEmpty()) {
             Button taken = button(Alarms.label(extras, "lblTaken", "✓"), Color.WHITE, 0xFF0F766E);
             taken.setOnClickListener(v -> {
-                Alarms.addPendingMarks(this, keys);
-                DoseWidget.markTaken(this, keys);
+                Family.handleTaken(getApplicationContext(), keys, null);
                 done();
             });
             root.addView(taken, buttonLp(dp(20)));

@@ -40,6 +40,12 @@ public class Bridge {
         return 3;
     }
 
+    /** Server settings + this device's credentials for family sharing. */
+    @JavascriptInterface
+    public void setFamily(String json) {
+        Family.configure(activity.getApplicationContext(), json);
+    }
+
     /** Data for the home-screen widget. */
     @JavascriptInterface
     public void setWidget(String json) {
