@@ -13,36 +13,61 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.PowerManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-/** Schedules reminders with AlarmManager so they ring even when the app is closed. */
+/**
+ * Medicine alarms. Each alarm carries everything needed to show itself
+ * (person, medicines + doses, labels) so it works with the app closed.
+ */
 public final class Alarms {
-    static final String CHANNEL = "dawa_reminders_v1";
-    static final String ACTION = "com.hamza.dawa.REMINDER";
+    static final String CHANNEL = "dawa_alarm_v2";
+    static final String ACTION_FIRE = "com.hamza.dawa.FIRE";
+    static final String ACTION_TAKEN = "com.hamza.dawa.TAKEN";
+    static final String ACTION_SNOOZE = "com.hamza.dawa.SNOOZE";
+    static final String ACTION_DISMISS = "com.hamza.dawa.DISMISS";
+    static final int TEST_ID = 0x1ABCDEF;
     private static final String PREFS = "dawa_alarms";
-    private static final int MAX_ALARMS = 450; // Android allows ~500 per app
+    private static final int MAX_ALARMS = 450;
+    private static final String[] EXTRA_KEYS = {"title", "body", "person", "timeLabel", "keys",
+            "lblTaken", "lblSnooze", "lblClose", "lblHeader"};
 
     private Alarms() { }
 
     static void ensureChannel(Context c) {
         NotificationManager nm = c.getSystemService(NotificationManager.class);
         if (nm == null || nm.getNotificationChannel(CHANNEL) != null) return;
+        // Old v1 channel (plain notification sound) is replaced by a real alarm channel
+        try { nm.deleteNotificationChannel("dawa_reminders_v1"); } catch (Exception ignored) { }
         NotificationChannel ch = new NotificationChannel(CHANNEL,
                 c.getString(R.string.channel_name), NotificationManager.IMPORTANCE_HIGH);
         ch.setDescription(c.getString(R.string.channel_desc));
         ch.enableVibration(true);
-        ch.setVibrationPattern(new long[]{0, 400, 200, 400, 200, 400});
-        ch.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
-                new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build());
+        ch.setVibrationPattern(new long[]{0, 600, 400, 600, 400, 600});
+        ch.enableLights(true);
+        ch.setLightColor(0xFF14B8A6);
+        ch.setSound(alarmSound(), new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build());
         ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        ch.setBypassDnd(true);
         nm.createNotificationChannel(ch);
     }
+
+    static Uri alarmSound() {
+        Uri u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (u == null) u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        if (u == null) u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        return u;
+    }
+
+    /* ---------------- permission / health checks ---------------- */
 
     static boolean canNotify(Context c) {
         if (Build.VERSION.SDK_INT >= 33
@@ -50,20 +75,54 @@ public final class Alarms {
             return false;
         }
         NotificationManager nm = c.getSystemService(NotificationManager.class);
-        return nm == null || nm.areNotificationsEnabled();
+        if (nm == null) return true;
+        if (!nm.areNotificationsEnabled()) return false;
+        NotificationChannel ch = nm.getNotificationChannel(CHANNEL);
+        return ch == null || ch.getImportance() != NotificationManager.IMPORTANCE_NONE;
     }
 
-    private static PendingIntent alarmIntent(Context c, int id, JSONObject item) {
-        Intent i = new Intent(c, AlarmReceiver.class).setAction(ACTION);
+    static boolean canExact(Context c) {
+        if (Build.VERSION.SDK_INT < 31) return true;
+        AlarmManager am = c.getSystemService(AlarmManager.class);
+        return am != null && am.canScheduleExactAlarms();
+    }
+
+    static boolean canFullScreen(Context c) {
+        if (Build.VERSION.SDK_INT < 34) return true;
+        NotificationManager nm = c.getSystemService(NotificationManager.class);
+        return nm == null || nm.canUseFullScreenIntent();
+    }
+
+    static boolean batteryUnrestricted(Context c) {
+        PowerManager pm = c.getSystemService(PowerManager.class);
+        return pm == null || pm.isIgnoringBatteryOptimizations(c.getPackageName());
+    }
+
+    /* ---------------- scheduling ---------------- */
+
+    private static Intent fireIntent(Context c, int id, JSONObject item) {
+        Intent i = new Intent(c, AlarmReceiver.class).setAction(ACTION_FIRE).putExtra("id", id);
         if (item != null) {
-            i.putExtra("id", id);
-            i.putExtra("title", item.optString("title"));
-            i.putExtra("body", item.optString("body"));
-            i.putExtra("key", item.optString("key"));
-            i.putExtra("action", item.optString("action"));
+            for (String k : EXTRA_KEYS) i.putExtra(k, item.optString(k));
         }
-        return PendingIntent.getBroadcast(c, id, i,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        return i;
+    }
+
+    private static PendingIntent firePi(Context c, int id, Intent i) {
+        return PendingIntent.getBroadcast(c, id, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    static void setAlarm(Context c, long at, PendingIntent pi) {
+        AlarmManager am = c.getSystemService(AlarmManager.class);
+        if (am == null) return;
+        if (canExact(c)) {
+            // Shown as an alarm clock by the system: most reliable, survives Doze and OEM battery savers best
+            PendingIntent show = PendingIntent.getActivity(c, 0, new Intent(c, MainActivity.class),
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            am.setAlarmClock(new AlarmManager.AlarmClockInfo(at, show), pi);
+        } else {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
+        }
     }
 
     /** Cancels everything previously scheduled and schedules the new list. */
@@ -76,14 +135,14 @@ public final class Alarms {
         if (!old.isEmpty()) {
             for (String s : old.split(",")) {
                 try {
-                    am.cancel(alarmIntent(c, Integer.parseInt(s), null));
+                    int id = Integer.parseInt(s);
+                    am.cancel(firePi(c, id, fireIntent(c, id, null)));
                 } catch (NumberFormatException ignored) { }
             }
         }
 
         StringBuilder ids = new StringBuilder();
-        long now = System.currentTimeMillis();
-        boolean exact = Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms();
+        long now = System.currentTimeMillis(), next = 0;
         int count = 0;
         try {
             JSONArray arr = new JSONArray(json == null ? "[]" : json);
@@ -92,37 +151,84 @@ public final class Alarms {
                 long at = item.getLong("at");
                 if (at <= now) continue;
                 int id = item.getInt("id");
-                PendingIntent pi = alarmIntent(c, id, item);
-                if (exact) {
-                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
-                } else {
-                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi);
-                }
+                setAlarm(c, at, firePi(c, id, fireIntent(c, id, item)));
                 if (ids.length() > 0) ids.append(',');
                 ids.append(id);
+                if (next == 0 || at < next) next = at;
                 count++;
             }
         } catch (Exception ignored) { }
 
-        prefs.edit().putString("json", json).putString("ids", ids.toString()).apply();
+        prefs.edit().putString("json", json).putString("ids", ids.toString())
+                .putInt("count", count).putLong("next", next).apply();
     }
 
-    /** Re-applies the last saved schedule (after reboot, app update, clock change). */
     static void reschedule(Context c) {
-        String json = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("json", "[]");
-        scheduleAll(c, json);
+        scheduleAll(c, c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("json", "[]"));
     }
 
-    static void show(Context c, int id, String title, String body, String key, String actionLabel) {
+    static int scheduledCount(Context c) {
+        return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt("count", 0);
+    }
+
+    static long nextAt(Context c) {
+        long n = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong("next", 0);
+        return n > System.currentTimeMillis() ? n : 0;
+    }
+
+    /** Re-fires the same alarm payload after some minutes. */
+    static void snooze(Context c, Bundle extras, int minutes) {
+        int id = extras.getInt("id", 1) ^ 0x20000000;
+        Intent i = new Intent(c, AlarmReceiver.class).setAction(ACTION_FIRE).putExtras(extras).putExtra("id", id);
+        setAlarm(c, System.currentTimeMillis() + minutes * 60_000L, firePi(c, id, i));
+    }
+
+    static void testAlarm(Context c, JSONObject item, int seconds) {
+        Intent i = fireIntent(c, TEST_ID, item).putExtra("test", true);
+        setAlarm(c, System.currentTimeMillis() + seconds * 1000L, firePi(c, TEST_ID, i));
+    }
+
+    /* ---------------- "taken" from outside the app ---------------- */
+
+    static synchronized void addPendingMarks(Context c, String keys) {
+        if (keys == null || keys.isEmpty()) return;
+        SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        try {
+            JSONArray arr = new JSONArray(p.getString("pendingMarks", "[]"));
+            JSONObject o = new JSONObject();
+            o.put("keys", keys);
+            o.put("at", System.currentTimeMillis());
+            arr.put(o);
+            p.edit().putString("pendingMarks", arr.toString()).apply();
+        } catch (Exception ignored) { }
+    }
+
+    static synchronized String takePendingMarks(Context c) {
+        SharedPreferences p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String s = p.getString("pendingMarks", "[]");
+        p.edit().remove("pendingMarks").apply();
+        return s;
+    }
+
+    /* ---------------- showing ---------------- */
+
+    private static PendingIntent actionPi(Context c, String action, int reqCode, Bundle extras) {
+        Intent i = new Intent(c, AlarmReceiver.class).setAction(action).putExtras(extras);
+        return PendingIntent.getBroadcast(c, reqCode, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    static void show(Context c, Bundle x) {
         ensureChannel(c);
         if (!canNotify(c)) return;
         NotificationManager nm = c.getSystemService(NotificationManager.class);
         if (nm == null) return;
+        int id = x.getInt("id", 1);
+        String title = x.getString("title", "");
+        String body = x.getString("body", "");
 
-        Intent open = new Intent(c, MainActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .putExtra("notifId", id);
-        PendingIntent openPi = PendingIntent.getActivity(c, id, open,
+        Intent full = new Intent(c, AlarmActivity.class).putExtras(x)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+        PendingIntent fullPi = PendingIntent.getActivity(c, id, full,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification.Builder b = new Notification.Builder(c, CHANNEL)
@@ -131,21 +237,41 @@ public final class Alarms {
                 .setContentTitle(title)
                 .setContentText(body)
                 .setStyle(new Notification.BigTextStyle().bigText(body))
-                .setCategory(Notification.CATEGORY_REMINDER)
+                .setCategory(Notification.CATEGORY_ALARM)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setAutoCancel(true)
                 .setShowWhen(true)
-                .setContentIntent(openPi);
+                .setContentIntent(fullPi);
 
-        if (key != null && !key.isEmpty()) {
-            Intent take = new Intent(c, MainActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    .putExtra("mark", key)
-                    .putExtra("notifId", id);
-            PendingIntent takePi = PendingIntent.getActivity(c, id ^ 0x40000000, take,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            String label = (actionLabel == null || actionLabel.isEmpty()) ? "✓" : actionLabel;
-            b.addAction(new Notification.Action.Builder((Icon) null, label, takePi).build());
+        String keys = x.getString("keys", "");
+        boolean isAlarm = !keys.isEmpty() || x.getBoolean("test", false);
+        if (!isAlarm) {
+            // Plain notice (e.g. low stock): no alarm screen, no endless ringing
+            nm.notify(id, b.build());
+            return;
         }
-        nm.notify(id, b.build());
+        b.setTimeoutAfter(10 * 60_000L)          // stop ringing after 10 minutes
+         .setFullScreenIntent(fullPi, true);      // alarm screen, even on the lock screen
+
+        if (!keys.isEmpty()) {
+            b.addAction(new Notification.Action.Builder((Icon) null, label(x, "lblTaken", "✓"),
+                    actionPi(c, ACTION_TAKEN, id ^ 0x40000000, x)).build());
+        }
+        b.addAction(new Notification.Action.Builder((Icon) null, label(x, "lblSnooze", "10'"),
+                actionPi(c, ACTION_SNOOZE, id ^ 0x10000000, x)).build());
+
+        Notification n = b.build();
+        n.flags |= Notification.FLAG_INSISTENT; // keep ringing until the user acts
+        nm.notify(id, n);
+    }
+
+    static String label(Bundle x, String key, String fallback) {
+        String s = x.getString(key);
+        return s == null || s.isEmpty() ? fallback : s;
+    }
+
+    static void cancel(Context c, int id) {
+        NotificationManager nm = c.getSystemService(NotificationManager.class);
+        if (nm != null) nm.cancel(id);
     }
 }

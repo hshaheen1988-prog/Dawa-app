@@ -16,10 +16,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.lang.ref.WeakReference;
+
 public class MainActivity extends Activity {
     private static final int FILE_REQUEST = 41;
     private static final int NOTIF_PERMISSION_REQUEST = 42;
     private static final String START_URL = "file:///android_asset/www/index.html";
+
+    private static WeakReference<MainActivity> current = new WeakReference<>(null);
 
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
@@ -29,6 +33,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        current = new WeakReference<>(this);
         Alarms.ensureChannel(this);
 
         web = new WebView(this);
@@ -122,6 +127,20 @@ public class MainActivity extends Activity {
         String key = pendingMark;
         pendingMark = null;
         web.evaluateJavascript("window.nativeMark && window.nativeMark('" + key + "')", null);
+    }
+
+    /** Called when a dose is marked from a notification while the app is open. */
+    static void refreshIfShowing() {
+        MainActivity a = current.get();
+        if (a != null) a.runOnUiThread(() -> {
+            if (a.pageReady) a.web.evaluateJavascript("window.nativeResume && window.nativeResume()", null);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (current.get() == this) current.clear();
+        super.onDestroy();
     }
 
     @Override
