@@ -125,6 +125,14 @@ main { max-width: 640px; margin: -48px auto 0; padding: 0 16px; position: relati
 .next.done .next-k { color: var(--ok); }
 
 /* Week strip */
+.week-head { display: flex; align-items: center; justify-content: space-between; margin: 16px 4px -6px; font-size: 14px; font-weight: 700; color: var(--muted); }
+.week-head button { border: none; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 12px; font-size: 13px; font-weight: 700; color: var(--brand); display: flex; align-items: center; gap: 6px; }
+.week-head button svg { width: 16px; height: 16px; }
+.cal button.c { border: none; font: inherit; cursor: pointer; }
+.cal.month .c { flex-direction: column; gap: 0; line-height: 1.1; position: relative; font-size: 14px; font-weight: 700; color: var(--text); }
+.cal.month .c small { font-size: 10px; font-weight: 600; opacity: .7; }
+.cal.month .c .inr-dot { position: absolute; top: 4px; inset-inline-end: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); }
+.cal .c { display: flex; align-items: center; justify-content: center; }
 .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 14px; }
 .wday {
   border: none; background: var(--card); border-radius: 14px; padding: 8px 0 6px; text-align: center;
@@ -255,6 +263,9 @@ details.fold[open] > summary { margin-bottom: 12px; }
 .filter button { border: none; background: var(--card); box-shadow: var(--shadow); padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); }
 .filter button.on { background: var(--text); color: var(--bg); }
 
+.inr-card { display: flex; gap: 12px; align-items: center; }
+.inr-chart { width: 100%; height: auto; display: block; direction: ltr; }
+.inr-pt { cursor: pointer; }
 /* Interactions */
 .ix { border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 1.6; border: 1.5px solid var(--line); background: var(--card-2); }
 .ix.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
@@ -470,6 +481,11 @@ const I = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>',
   box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
   shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+  drop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5 7 8.5 7 12a7 7 0 0 1-14 0c0-3.5 3-7 7-12z"/></svg>',
+  voice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  chevR: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  chevL: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
   info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'
 };
 const SHAPES = ['capsule', 'tablet', 'oval', 'liquid', 'drops', 'injection', 'inhaler'];
@@ -539,6 +555,36 @@ const T = {
     resetAll: 'مسح كل البيانات', confirmReset: 'سيُحذف كل شيء نهائياً. هل أنت متأكد؟', version: 'الإصدار',
     reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'أخذته ✓',
     days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], daysShort: ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
+    rPeriod: 'الفترة', rDays: d => d === 7 ? 'آخر 7 أيام' : `آخر ${d} يوماً`, rLabs: 'تضمين فحوصات المختبر', rLabsTitle: 'فحوصات المختبر', rLabsHint: 'آخر 5 قراءات INR مع رسم بياني',
+    rLabsNone: 'لا توجد فحوصات مسجّلة بعد (سجّلها من متابعة INR)', rPdf: 'تصدير PDF', rText: 'مشاركة كنص (واتساب…)',
+    rPdfHint: 'عند الضغط على "تصدير PDF" تفتح شاشة الطباعة: اختر "حفظ بصيغة PDF" ثم زر التنزيل.', rAdhN: d => `الالتزام خلال آخر ${d} ${d === 7 ? 'أيام' : 'يوماً'}`,
+    rDate: 'التاريخ', rStatus: 'الحالة', rNote: 'هذا التقرير من تسجيلات المريض ولا يغني عن التقييم الطبي.', rPopup: 'اسمح بالنوافذ المنبثقة لتصدير التقرير',
+    inrPastHint: 'لتسجيل نتائج قديمة غيّر التاريخ', inrSaveMore: 'حفظ وإضافة نتيجة ثانية', inrSavedMore: (v, d) => `تم حفظ ${v} (${d}) — أدخل النتيجة التالية`,
+    dayPending: 'قادمة', dayNone: 'لا جرعات مطلوبة في هذا اليوم', daySummary: (n, m) => `${n} ${n === 1 ? 'جرعة' : n === 2 ? 'جرعتين' : n <= 10 ? 'جرعات' : 'جرعة'} · ${m === 1 ? 'دواء واحد' : m === 2 ? 'دواءين' : `${m} أدوية`}`,
+    dayOpen: 'تسجيل جرعات هذا اليوم', calendarBtn: 'التقويم', monthHint: 'اضغط على أي يوم لتشوف جرعاته · الرقم الصغير = عدد الجرعات',
+    inrTitle: 'متابعة INR', inrSub: 'نتائج فحص التخثر للوارفارين', inrNoTests: 'لم تُسجّل نتائج بعد', inrRange: (l, h) => `النطاق المطلوب ${l}–${h}`,
+    inrTarget: 'المطلوب', inrSt: { ok: 'ضمن النطاق', low: 'أقل من المطلوب', high: 'أعلى من المطلوب', crit: 'مرتفع جداً' },
+    inrAdvice: { ok: 'ممتاز. استمر على نفس الجرعة إلا إذا قال طبيبك غير ذلك.',
+      low: 'الدم أقل تمييعاً من المطلوب (خطر جلطة). لا تغيّر الجرعة بنفسك — تواصل مع طبيبك أو عيادة التخثر.',
+      high: 'الدم أكثر تمييعاً من المطلوب (خطر نزيف). تواصل مع طبيبك قبل جرعتك القادمة.',
+      crit: 'مرتفع جداً. اتصل بطبيبك اليوم. إذا في نزيف أو دم بالبول أو البراز أو صداع شديد، روح عالطوارئ فوراً.' },
+    inrOverdue: 'فات موعد الفحص', inrToday: 'فحص INR اليوم', inrNextIn: (d, s) => `الفحص القادم ${d === 1 ? 'بكرة' : `بعد ${d} ${d <= 10 ? 'أيام' : 'يوماً'}`} · ${s}`,
+    inrLast: 'آخر نتيجة', inrTapHint: 'اضغط على أي نقطة لتفاصيلها', inrEmpty: 'سجّل نتيجة أول فحص لتبدأ المتابعة', inrAdd: 'إضافة نتيجة فحص',
+    inrNext: 'موعد الفحص القادم', inrNoNext: 'غير محدد', inrTargetRange: 'النطاق المطلوب', inrTargetHint: 'كما يحدده طبيبك (الشائع 2–3)',
+    inrHistory: 'السجل', inrChanged: 'تغيّرت الجرعة', inrDisclaimer: 'أداة للتسجيل والمتابعة فقط. قرار تعديل جرعة الوارفارين دائماً للطبيب.',
+    inrValue: 'قيمة INR', inrDate: 'تاريخ الفحص', inrDose: 'جرعة الوارفارين الحالية', inrDosePh: 'مثلاً: 5 ملغ يومياً، أو 7.5 ملغ السبت والثلاثاء',
+    inrChangedQ: 'غيّر الطبيب الجرعة؟', inrChangedHint: 'حتى يظهر التغيير بالسجل والتقرير', inrNotePh: 'مثلاً: نسيت جرعة يوم الأحد',
+    inrInWeeks: n => n === 1 ? 'بعد أسبوع' : n === 2 ? 'بعد أسبوعين' : `بعد ${n} أسابيع`, inrKeepNext: 'بدون', inrBad: 'أدخل قيمة INR صحيحة (مثلاً 2.4)', inrDelQ: 'حذف هذه النتيجة؟',
+    inrRemTitle: '🩸 موعد فحص INR اليوم', inrRemBody: n => `تذكير: فحص INR لـ ${n} اليوم`,
+    rmTitle: 'وضع رمضان', rmSub: 'نقل مواعيد الأدوية للسحور والإفطار', rmSuhoor: 'السحور', rmIftar: 'الإفطار', rmUntil: 'ينتهي تلقائياً في', rmMeds: 'المواعيد الجديدة',
+    rmActive: (s, i) => `وضع رمضان · السحور ${s} · الإفطار ${i}`, rmSuggest: 'رمضان كريم! بدك تنظّم مواعيد الأدوية حسب السحور والإفطار؟', rmSetup: 'تنظيم',
+    rmPlans: n => n === 1 ? { auto: 'مع الإفطار', suhoor: 'مع السحور', keep: 'بدون تغيير' } : { auto: n === 2 ? 'سحور + إفطار' : 'سحور + إفطار + بينهما', keep: 'بدون تغيير' },
+    rmThree: '3 جرعات أو أكثر يومياً صعب تنظيمها مع الصيام — اسأل طبيبك عن بديل مناسب.',
+    rmWarfarin: 'حافظ على نفس الوقت كل يوم، وافحص INR خلال رمضان لأن تغيّر الأكل يؤثر على مفعوله.',
+    rmFluids: 'يزيد فقدان السوائل: اشرب ماء كافياً بين الإفطار والسحور، واسأل طبيبك عن الصيام.',
+    rmGeneral: 'الصيام مع الأدوية المزمنة يحتاج موافقة الطبيب. لا تغيّر مواعيد أو جرعات بدون استشارة.', rmOn: 'تم تفعيل وضع رمضان 🌙', rmOff: 'تم إيقاف وضع رمضان',
+    voiceMissing: 'الصوت العربي غير مثبّت: ثبّته من الشاشة اللي فتحت، ثم جرّب مرة ثانية', voiceNoEngine: 'لا يوجد محرك قراءة صوتية على الموبايل (ثبّت Speech Services by Google)', voice: 'المنبّه الصوتي', voiceHint: 'يقرأ اسم الدواء والجرعة بصوت عالٍ', testVoiceBtn: 'اسمع', testMedName: 'دواء تجريبي',
+    wAllDone: 'أخذت كل جرعات اليوم ✓', wOpen: 'افتح التطبيق للتحديث', wNext: 'بعدها',
     sev: { 3: 'تفاعل شديد', 2: 'تفاعل متوسط', 1: 'تفاعل بسيط' }, with: 'مع',
     ixTitle: 'فحص التفاعلات الدوائية', ixWith: 'مع وارفارين وأسيتازولاميد', ixPh: 'اكتب اسم الدواء… مثلاً بروفين',
     ixMine: 'افحص كل أدويتي', ixMineNone: 'لا توجد تفاعلات معروفة بين أدويتك المسجّلة والوارفارين أو الأسيتازولاميد',
@@ -602,6 +648,36 @@ const T = {
     resetAll: 'Erase all data', confirmReset: 'Everything will be deleted permanently. Are you sure?', version: 'Version',
     reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'Taken ✓',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], daysShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+    rPeriod: 'Period', rDays: d => `Last ${d} days`, rLabs: 'Include lab tests', rLabsTitle: 'Lab tests', rLabsHint: 'Last 5 INR readings with a chart',
+    rLabsNone: 'No lab results logged yet (add them in INR tracking)', rPdf: 'Export PDF', rText: 'Share as text (WhatsApp…)',
+    rPdfHint: 'Export PDF opens the print screen: choose "Save as PDF", then the download button.', rAdhN: d => `Adherence, last ${d} days`,
+    rDate: 'Date', rStatus: 'Status', rNote: "This report is based on the patient's own logs and doesn't replace medical assessment.", rPopup: 'Allow pop-ups to export the report',
+    inrPastHint: 'To log older results, change the date', inrSaveMore: 'Save & add another', inrSavedMore: (v, d) => `Saved ${v} (${d}) — enter the next result`,
+    dayPending: 'Upcoming', dayNone: 'No doses needed on this day', daySummary: (n, m) => `${n} dose${n === 1 ? '' : 's'} · ${m} medicine${m === 1 ? '' : 's'}`,
+    dayOpen: "Log this day's doses", calendarBtn: 'Calendar', monthHint: 'Tap any day to see its doses · small number = doses that day',
+    inrTitle: 'INR tracking', inrSub: 'Warfarin blood-test results', inrNoTests: 'No results yet', inrRange: (l, h) => `Target range ${l}–${h}`,
+    inrTarget: 'Target', inrSt: { ok: 'In range', low: 'Below range', high: 'Above range', crit: 'Very high' },
+    inrAdvice: { ok: "Great. Keep the same dose unless your doctor says otherwise.",
+      low: "Blood is thinner less than needed (clot risk). Don't change the dose yourself — contact your doctor or anticoagulation clinic.",
+      high: 'Blood is thinner than needed (bleeding risk). Contact your doctor before your next dose.',
+      crit: 'Very high. Call your doctor today. If there is bleeding, blood in urine or stool, or a severe headache, go to the emergency room now.' },
+    inrOverdue: 'Test overdue', inrToday: 'INR test today', inrNextIn: (d, s) => `Next test ${d === 1 ? 'tomorrow' : `in ${d} days`} · ${s}`,
+    inrLast: 'Latest result', inrTapHint: 'Tap any point for details', inrEmpty: 'Log your first result to start tracking', inrAdd: 'Add test result',
+    inrNext: 'Next test', inrNoNext: 'Not set', inrTargetRange: 'Target range', inrTargetHint: 'As set by your doctor (commonly 2–3)',
+    inrHistory: 'History', inrChanged: 'Dose changed', inrDisclaimer: 'For logging and tracking only. Warfarin dose changes are always your doctor’s decision.',
+    inrValue: 'INR value', inrDate: 'Test date', inrDose: 'Current warfarin dose', inrDosePh: 'e.g. 5 mg daily, or 7.5 mg Sat & Tue',
+    inrChangedQ: 'Did the doctor change the dose?', inrChangedHint: 'So it shows in history and the report', inrNotePh: 'e.g. missed Sunday dose',
+    inrInWeeks: n => n === 1 ? 'In 1 week' : `In ${n} weeks`, inrKeepNext: 'None', inrBad: 'Enter a valid INR value (e.g. 2.4)', inrDelQ: 'Delete this result?',
+    inrRemTitle: '🩸 INR test today', inrRemBody: n => `Reminder: INR test for ${n} today`,
+    rmTitle: 'Ramadan mode', rmSub: 'Move dose times to suhoor and iftar', rmSuhoor: 'Suhoor', rmIftar: 'Iftar', rmUntil: 'Ends automatically on', rmMeds: 'New times',
+    rmActive: (s, i) => `Ramadan mode · Suhoor ${s} · Iftar ${i}`, rmSuggest: 'Ramadan Kareem! Arrange your medicine times around suhoor and iftar?', rmSetup: 'Set up',
+    rmPlans: n => n === 1 ? { auto: 'At iftar', suhoor: 'At suhoor', keep: 'No change' } : { auto: n === 2 ? 'Suhoor + iftar' : 'Suhoor + iftar + between', keep: 'No change' },
+    rmThree: '3+ doses a day are hard to fit around fasting — ask your doctor about an alternative.',
+    rmWarfarin: 'Keep the same time every day and check INR during Ramadan, as diet changes affect it.',
+    rmFluids: 'Increases fluid loss: drink enough water between iftar and suhoor, and ask your doctor about fasting.',
+    rmGeneral: "Fasting with chronic medicines needs your doctor's approval. Don't change times or doses without advice.", rmOn: 'Ramadan mode on 🌙', rmOff: 'Ramadan mode off',
+    voiceMissing: 'The voice for this language is not installed: install it from the screen that opened, then try again', voiceNoEngine: 'No text-to-speech engine on this phone (install Speech Services by Google)', voice: 'Voice alarm', voiceHint: 'Reads the medicine and dose out loud', testVoiceBtn: 'Listen', testMedName: 'Test medicine',
+    wAllDone: "All of today's doses taken ✓", wOpen: 'Open the app to refresh', wNext: 'Then',
     sev: { 3: 'Serious', 2: 'Moderate', 1: 'Minor' }, with: 'With',
     ixTitle: 'Drug interaction check', ixWith: 'With warfarin and acetazolamide', ixPh: 'Type a medicine name… e.g. ibuprofen',
     ixMine: 'Check all my medicines', ixMineNone: 'No known interactions between your medicines and warfarin or acetazolamide',
@@ -637,11 +713,14 @@ let statRange = 30;
 
 function blank() {
   return { lang: (navigator.language || 'ar').startsWith('en') ? 'en' : 'ar', theme: 'auto', user: null, profiles: [], active: null,
-    meds: [], log: {}, prn: [], snoozes: {}, notified: {} };
+    meds: [], log: {}, prn: [], snoozes: {}, notified: {}, inr: {}, voice: true,
+    ramadan: { on: false, suhoor: '03:45', iftar: '18:00', from: null, to: null } };
 }
 function migrate(d) {
   d = Object.assign(blank(), d);
-  d.prn = d.prn || []; d.snoozes = d.snoozes || {}; d.theme = d.theme || 'auto';
+  d.prn = d.prn || []; d.snoozes = d.snoozes || {}; d.theme = d.theme || 'auto'; d.inr = d.inr || {};
+  d.ramadan = Object.assign({ on: false, suhoor: '03:45', iftar: '18:00', from: null, to: null }, d.ramadan || {});
+  if (d.voice === undefined) d.voice = true;
   d.profiles.forEach((p, i) => { if (!p.color) p.color = AVATAR[i % AVATAR.length]; });
   d.meds.forEach((m, i) => {
     if (!m.color) m.color = COLORS[i % COLORS.length];
@@ -732,7 +811,7 @@ function slotsFor(pid, date) {
     if (m.profileId !== pid) continue;
     const a = amountOn(m, date);
     if (a <= 0) continue;
-    for (const tm of m.times) {
+    for (const tm of medTimes(m, date)) {
       const key = logKey(m.id, date, tm);
       out.push({ med: m, time: tm, key, amount: a, log: S.log[key], status: S.log[key]?.status, snooze: S.snoozes[key] });
     }
@@ -873,7 +952,7 @@ function renderToday() {
       if (d === td && st.taken === st.total) dot = 'full';
     }
     const dd = D(d);
-    return `<button class="wday ${d === td ? 'today' : ''} ${d === date ? 'sel' : ''}" onclick="pickDay('${d}')">
+    return `<button class="wday ${d === td ? 'today' : ''} ${d === date ? 'sel' : ''}" onclick="openDay('${d}')">
       <span class="d">${t('days')[dd.getDay()]}</span><span class="n num">${dd.getDate()}</span><span class="dot ${dot}"></span></button>`;
   }).join('');
 
@@ -906,7 +985,9 @@ function renderToday() {
         ${logs.length ? `<button class="b-more" onclick="undoPrn('${m.id}','${date}')" aria-label="${t('undo')}">${I.undo}</button>` : ''}</div>`;
     }).join('')}</div>`;
   }
-  el.innerHTML = nextCard + `<div class="week">${week}</div>` + banner + body;
+  const weekHead = `<div class="week-head"><span>${new Date().toLocaleDateString(locale(), { month: 'long', year: 'numeric' })}</span>
+    <button onclick="openMonth()">${I.cal} ${t('calendarBtn')}</button></div>`;
+  el.innerHTML = nextCard + inrCardHtml(S.active) + weekHead + `<div class="week">${week}</div>` + ramadanBanner() + banner + body;
 }
 
 function doseCard(s, date, td, now) {
@@ -1497,6 +1578,411 @@ function medIxFlag(m) {
 }
 
 /* =====================================================================
+   INR tracking (warfarin)
+   ===================================================================== */
+function inrOf(pid) {
+  if (!S.inr[pid]) S.inr[pid] = { low: 2, high: 3, tests: [], next: null };
+  return S.inr[pid];
+}
+function hasWarfarin(pid) { const td = today(); return S.meds.some(m => m.profileId === pid && (!m.end || m.end >= td) && targetOf(m.name) === 'warfarin'); }
+function inrStatus(v, r) { return v >= 5 ? 'crit' : v > r.high ? 'high' : v < r.low ? 'low' : 'ok'; }
+const INR_TAG = { ok: 'ok', low: 'warn', high: 'bad', crit: 'bad' };
+const INR_COLOR = { ok: 'var(--ok)', low: 'var(--warn)', high: 'var(--bad)', crit: 'var(--bad)' };
+function sortedTests(pid) { return [...inrOf(pid).tests].sort((a, b) => a.date.localeCompare(b.date)); }
+
+function inrCardHtml(pid) {
+  const r = inrOf(pid);
+  if (!hasWarfarin(pid) && !r.tests.length) return '';
+  const tests = sortedTests(pid), last = tests[tests.length - 1], td = today();
+  const st = last ? inrStatus(last.value, r) : null;
+  let nextTxt = '';
+  if (r.next) {
+    const dd = daysBetween(td, r.next);
+    nextTxt = dd < 0 ? `<span class="tag bad">${t('inrOverdue')}</span>` : dd === 0 ? `<span class="tag warn">${t('inrToday')}</span>`
+      : `<span class="muted">${t('inrNextIn')(dd, fmtDate(r.next, { weekday: 'short', day: 'numeric', month: 'short' }))}</span>`;
+  }
+  return `<div class="card inr-card" onclick="openInr()" style="margin-top:12px;cursor:pointer">
+    <div class="micon" style="background:var(--bad-soft);color:var(--bad)">${I.drop}</div>
+    <div style="flex:1;min-width:0"><div class="row" style="gap:8px"><b>INR</b>
+      ${last ? `<b class="num" style="font-size:20px">${fmtNum(last.value)}</b><span class="tag ${INR_TAG[st]}">${t('inrSt')[st]}</span>` : `<span class="muted" style="font-size:13px">${t('inrNoTests')}</span>`}</div>
+      <div style="font-size:13px;margin-top:2px">${nextTxt || `<span class="muted">${t('inrRange')(r.low, r.high)}</span>`}</div></div>
+    <span class="muted" style="font-size:22px">›</span></div>`;
+}
+
+/** Line chart: one series (INR over time) with the target band shaded; status carried by label + color. */
+function inrChartSvg(pid, count = 20, still = false) {
+  const r = inrOf(pid), tests = sortedTests(pid).slice(-count);
+  if (!tests.length) return '';
+  const W = 340, H = 180, L = 30, R = 14, T = 14, B = 26;
+  const maxV = Math.max(r.high + 1, ...tests.map(x => x.value)) + .3, minV = Math.max(0, Math.min(r.low - 1, ...tests.map(x => x.value)) - .3);
+  const t0 = D(tests[0].date).getTime(), t1 = D(tests[tests.length - 1].date).getTime(), span = Math.max(1, t1 - t0);
+  const x = d => tests.length === 1 ? (L + W - R) / 2 : L + (D(d).getTime() - t0) / span * (W - L - R);
+  const y = v => T + (maxV - v) / (maxV - minV) * (H - T - B);
+  const grid = [];
+  for (let v = Math.ceil(minV); v <= maxV; v++) grid.push(`<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/>
+    <text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="var(--faint)">${v}</text>`);
+  const pts = tests.map(p => `${x(p.date).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
+  const last = tests[tests.length - 1];
+  const dots = tests.map((p, i) => {
+    const st = inrStatus(p.value, r);
+    return `<g class="inr-pt" ${still ? '' : `onclick="inrTip(${i})"`}><circle cx="${x(p.date)}" cy="${y(p.value)}" r="14" fill="transparent"/>
+      <circle cx="${x(p.date)}" cy="${y(p.value)}" r="5" fill="${INR_COLOR[st]}" stroke="var(--card)" stroke-width="2"/></g>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" class="inr-chart" dir="ltr" role="img" aria-label="INR">
+    <rect x="${L}" y="${y(r.high)}" width="${W - L - R}" height="${y(r.low) - y(r.high)}" fill="var(--ok-soft)"/>
+    ${grid.join('')}
+    <text x="${L + 4}" y="${y(r.high) + 12}" text-anchor="start" font-size="10" font-weight="700" fill="var(--ok)"><tspan direction="ltr" unicode-bidi="embed">${r.low}–${r.high}</tspan></text>
+    <polyline points="${pts}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    <text x="${Math.min(x(last.date), W - R - 14)}" y="${y(last.value) - 11}" text-anchor="middle" font-size="12" font-weight="800" fill="var(--text)">${fmtNum(last.value)}</text>
+    <text x="${L}" y="${H - 6}" font-size="10" fill="var(--faint)">${fmtDate(tests[0].date)}</text>
+    ${tests.length > 1 ? `<text x="${W - R}" y="${H - 6}" text-anchor="end" font-size="10" fill="var(--faint)">${fmtDate(last.date)}</text>` : ''}
+  </svg>`;
+}
+function inrTip(i) {
+  const r = inrOf(S.active), p = sortedTests(S.active).slice(-20)[i], el = document.getElementById('inrTip');
+  if (!p || !el) return;
+  const st = inrStatus(p.value, r);
+  el.innerHTML = `<b class="num">${fmtDate(p.date, { day: 'numeric', month: 'long', year: 'numeric' })}: ${fmtNum(p.value)}</b> <span class="tag ${INR_TAG[st]}">${t('inrSt')[st]}</span>${p.dose ? ` · ${esc(p.dose)}` : ''}`;
+  haptic(8);
+}
+function openInr() {
+  const pid = S.active, r = inrOf(pid), tests = sortedTests(pid), last = tests[tests.length - 1];
+  const st = last ? inrStatus(last.value, r) : null;
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:12px"><div class="micon" style="background:var(--bad-soft);color:var(--bad)">${I.drop}</div>
+      <div class="grow"><h3 style="margin:0">${t('inrTitle')}</h3><div class="muted" style="font-size:13px">${t('inrSub')}</div></div></div>
+    ${last ? `<div class="ix ${INR_TAG[st] === 'ok' ? 'ok' : INR_TAG[st]}" style="margin-bottom:12px"><b>${t('inrLast')}: <span class="num">${fmtNum(last.value)}</span> — ${t('inrSt')[st]}</b>
+      <div style="margin-top:4px">${t('inrAdvice')[st]}</div></div>` : ''}
+    ${tests.length ? `<div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:10px 8px 6px">${inrChartSvg(pid)}
+      <div id="inrTip" class="muted" style="font-size:13px;text-align:center;min-height:20px;padding:0 8px">${t('inrTapHint')}</div></div>` : `<div class="empty" style="padding:10px"><p>${t('inrEmpty')}</p></div>`}
+    <button class="btn" style="margin-top:12px" onclick="openInrForm()">${I.plus.replace('<svg', '<svg width="20" height="20"')} ${t('inrAdd')}</button>
+
+    <div class="card" style="box-shadow:none;border:1.5px solid var(--line);margin-top:14px;padding:4px 14px">
+      <div class="set-row"><span class="ico">${I.clock}</span><div class="body">${t('inrNext')}<small>${r.next ? fmtDate(r.next, { weekday: 'long', day: 'numeric', month: 'long' }) : t('inrNoNext')}</small></div>
+        <input type="date" id="inrNextIn" value="${r.next || ''}" style="width:150px" onchange="setInrNext(this.value)"></div>
+      <div class="set-row"><span class="ico">${I.shield}</span><div class="body">${t('inrTargetRange')}<small>${t('inrTargetHint')}</small></div>
+        <div class="row" style="gap:4px"><input type="number" step="0.1" min="1" max="4" value="${r.low}" style="width:64px" onchange="setInrRange('low',this.value)" inputmode="decimal">
+        <span>–</span><input type="number" step="0.1" min="1.5" max="5" value="${r.high}" style="width:64px" onchange="setInrRange('high',this.value)" inputmode="decimal"></div></div>
+    </div>
+
+    ${tests.length ? `<div class="sec-title">${I.doc}<span>${t('inrHistory')}</span></div>
+    <div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 14px">${[...tests].reverse().map(p => {
+      const s2 = inrStatus(p.value, r);
+      return `<div class="set-row" style="align-items:flex-start"><b class="num" style="font-size:20px;min-width:44px;color:${INR_COLOR[s2]}">${fmtNum(p.value)}</b>
+        <div class="body"><span class="tag ${INR_TAG[s2]}">${t('inrSt')[s2]}</span> <span class="muted" style="font-size:13px">${fmtDate(p.date, { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+          ${p.dose ? `<small style="color:var(--text)">💊 ${esc(p.dose)}${p.changed ? ` <span class="tag brand">${t('inrChanged')}</span>` : ''}</small>` : ''}
+          ${p.note ? `<small>📝 ${esc(p.note)}</small>` : ''}</div>
+        <button class="b-more" onclick="openInrForm('${p.id}')" aria-label="${t('edit')}">${I.edit}</button></div>`;
+    }).join('')}</div>` : ''}
+    <p class="muted" style="font-size:12px;margin-top:14px;line-height:1.6">⚠️ ${t('inrDisclaimer')}</p>`);
+}
+function setInrNext(v) { inrOf(S.active).next = v || null; save(); openInr(); render(); }
+function setInrRange(k, v) {
+  const r = inrOf(S.active), n = parseFloat(v);
+  if (!(n > 0)) return;
+  r[k] = Math.round(n * 10) / 10;
+  if (r.low >= r.high) { if (k === 'low') r.high = +(r.low + .5).toFixed(1); else r.low = +(r.high - .5).toFixed(1); }
+  save(); openInr();
+}
+function openInrForm(id) {
+  const r = inrOf(S.active), prev = sortedTests(S.active).pop();
+  const p = id ? r.tests.find(x => x.id === id) : { date: today(), value: '', dose: prev?.dose || '', changed: false, note: '' };
+  if (!p) return;
+  openModal(`<div class="grab"></div><h3>${id ? t('edit') : t('inrAdd')}</h3>
+    <form id="inrForm" novalidate>
+      <div class="row field">
+        <div class="grow"><label class="lbl">${t('inrValue')}</label><input name="value" type="number" step="0.1" min="0.5" max="15" inputmode="decimal" value="${p.value}" placeholder="2.5" style="font-size:22px;font-weight:800"></div>
+        <div class="grow"><label class="lbl">${t('inrDate')}</label><input name="date" type="date" value="${p.date}" max="${today()}"></div></div>
+      ${id ? '' : `<div class="hint" style="margin:-8px 0 12px">📅 ${t('inrPastHint')}</div>`}
+      <div id="inrLive"></div>
+      <div class="field"><label class="lbl">${t('inrDose')}</label><input name="dose" value="${esc(p.dose)}" placeholder="${t('inrDosePh')}"></div>
+      <div class="field card switch" style="padding:12px 14px;box-shadow:none;border:1.5px solid var(--line)">
+        <div><div style="font-weight:700">${t('inrChangedQ')}</div><div class="hint" style="margin:0">${t('inrChangedHint')}</div></div>
+        <button type="button" class="tgl ${p.changed ? 'on' : ''}" id="inrChg" onclick="this.classList.toggle('on')"></button></div>
+      <div class="field"><label class="lbl">${t('notes')} <span class="muted" style="font-weight:400">(${t('optional')})</span></label><input name="note" value="${esc(p.note)}" placeholder="${t('inrNotePh')}"></div>
+      ${id ? '' : `<div class="field"><label class="lbl">${t('inrNext')}</label><div class="opts">
+        ${[7, 14, 28].map(n => `<button type="button" class="opt" data-days="${n}">${t('inrInWeeks')(n / 7)}</button>`).join('')}
+        <button type="button" class="opt on" data-days="0">${t('inrKeepNext')}</button></div><input type="hidden" name="nextDays" value="0"></div>`}
+      <div class="stack"><button class="btn" type="submit">${t('save')}</button>
+        ${id ? `<button class="btn danger" type="button" onclick="deleteInr('${id}')">${t('del')}</button>` : `<button class="btn soft" type="button" id="inrMore">${I.plus.replace('<svg', '<svg width="18" height="18"')} ${t('inrSaveMore')}</button>`}
+        <button class="btn ghost" type="button" onclick="openInr()">${t('cancel')}</button></div>
+    </form>`);
+  const f = document.getElementById('inrForm');
+  const live = () => {
+    const v = parseFloat(f.value.value), box = document.getElementById('inrLive');
+    if (!(v > 0)) { box.innerHTML = ''; return; }
+    const st = inrStatus(v, r);
+    box.innerHTML = `<div class="ix ${INR_TAG[st] === 'ok' ? 'ok' : INR_TAG[st]}" style="margin:-4px 0 14px"><b>${t('inrSt')[st]}</b> — ${t('inrAdvice')[st]}</div>`;
+  };
+  f.value.addEventListener('input', live); live();
+  f.querySelectorAll('.opts .opt').forEach(b => b.onclick = () => { f.nextDays.value = b.dataset.days; f.querySelectorAll('.opts .opt').forEach(x => x.classList.toggle('on', x === b)); });
+  if (!id) setTimeout(() => f.value.focus(), 250);
+  const submit = again => {
+    const v = parseFloat(f.value.value);
+    if (!(v >= 0.5 && v <= 15)) { toast(t('inrBad')); haptic([30, 50, 30]); return; }
+    const data = { date: f.date.value || today(), value: Math.round(v * 10) / 10, dose: f.dose.value.trim(), changed: document.getElementById('inrChg').classList.contains('on'), note: f.note.value.trim() };
+    if (id) Object.assign(r.tests.find(x => x.id === id), data);
+    else {
+      const isLatest = !r.tests.some(x => x.date > data.date);
+      r.tests.push({ id: uid(), ...data });
+      const nd = +(f.nextDays?.value || 0);
+      if (isLatest && nd) r.next = addDays(data.date, nd);
+      else if (isLatest && r.next && r.next <= data.date) r.next = null;
+    }
+    haptic([20, 40, 20]); save(); render();
+    if (again) {
+      // Keep the form open for the next (older) result: same dose, date one week earlier
+      f.value.value = ''; f.note.value = ''; document.getElementById('inrChg').classList.remove('on');
+      f.date.value = addDays(data.date, -7); live(); f.value.focus();
+      toast(t('inrSavedMore')(fmtNum(data.value), fmtDate(data.date)));
+    } else { openInr(); toast(t('saved')); }
+  };
+  f.onsubmit = e => { e.preventDefault(); submit(false); };
+  document.getElementById('inrMore')?.addEventListener('click', () => submit(true));
+}
+async function deleteInr(id) {
+  if (!await ask(t('inrDelQ'), t('del'))) return;
+  const r = inrOf(S.active); r.tests = r.tests.filter(x => x.id !== id); save(); render(); openInr();
+}
+function inrReportLines(pid) {
+  const r = S.inr[pid]; if (!r || !r.tests.length) return [];
+  const tests = sortedTests(pid).slice(-5).reverse();
+  return ['', `▪ INR (${t('inrTarget')} ${r.low}–${r.high}):`, ...tests.map(p => `   ${fmtDate(p.date, { day: 'numeric', month: 'short' })}: ${fmtNum(p.value)} — ${t('inrSt')[inrStatus(p.value, r)]}${p.dose ? ` — ${p.dose}` : ''}${p.changed ? ` (${t('inrChanged')})` : ''}`)];
+}
+
+/* =====================================================================
+   Ramadan mode
+   ===================================================================== */
+function hijriMonth(date) {
+  for (const cal of ['islamic-umalqura', 'islamic-civil', 'islamic']) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-u-ca-' + cal + '-nu-latn', { month: 'numeric', timeZone: 'UTC' }).formatToParts(new Date(date + 'T12:00:00Z'));
+      const m = +(parts.find(x => x.type === 'month')?.value);
+      if (m >= 1 && m <= 12) return m;
+    } catch (e) {}
+  }
+  return 0;
+}
+const inRamadanCal = d => hijriMonth(d) === 9;
+function ramadanEnd(from) {
+  if (!inRamadanCal(from)) return addDays(from, 29);
+  let d = from; for (let i = 0; i < 31 && inRamadanCal(addDays(d, 1)); i++) d = addDays(d, 1);
+  return d;
+}
+const ramadanActive = date => !!(S.ramadan.on && S.ramadan.from && date >= S.ramadan.from && date <= S.ramadan.to);
+function midTime(a, b) {
+  let x = toMin(a), y = toMin(b); if (y <= x) y += 1440;
+  const m = Math.round((x + y) / 2 / 5) * 5 % 1440;
+  return `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+}
+/** Dose times for a medicine on a date (shifted to suhoor/iftar during Ramadan mode). */
+function medTimes(m, date) {
+  return ramadanActive(date) ? ramadanMap(m) : m.times;
+}
+function ramadanMap(m) {
+  if (!m.times.length || m.ramadanPlan === 'keep') return m.times;
+  const { suhoor, iftar } = S.ramadan, n = m.times.length;
+  if (n === 1) return [m.ramadanPlan === 'suhoor' ? suhoor : iftar];
+  if (n === 2) return [suhoor, iftar].sort();
+  return [suhoor, iftar, midTime(iftar, suhoor)].sort();
+}
+function ramadanWarnings(m) {
+  const w = [], tg = targetOf(m.name);
+  if (m.times.length >= 3) w.push(t('rmThree'));
+  if (tg === 'warfarin') w.push(t('rmWarfarin'));
+  if (tg === 'acetazolamide' || interactionsFor(m.name, ['acetazolamide']).some(e => e.label.en === 'Diuretics')) w.push(t('rmFluids'));
+  return w;
+}
+function ramadanBanner() {
+  const td = today();
+  if (ramadanActive(td)) {
+    return `<div class="banner" style="background:var(--brand-soft);color:var(--brand);cursor:pointer" onclick="openRamadan()">🌙<span style="flex:1">${t('rmActive')(fmtTime(S.ramadan.suhoor), fmtTime(S.ramadan.iftar))}</span><span>›</span></div>`;
+  }
+  const yr = td.slice(0, 4);
+  if (!S.ramadan.on && inRamadanCal(td) && S.ramadan.dismissed !== yr && S.meds.some(m => !isPrn(m))) {
+    return `<div class="banner" style="background:var(--brand-soft);color:var(--brand)">🌙<span style="flex:1">${t('rmSuggest')}</span>
+      <button class="btn small" onclick="openRamadan()">${t('rmSetup')}</button><button class="b-more" style="height:36px;background:none" onclick="S.ramadan.dismissed='${yr}';save();render()">${I.x}</button></div>`;
+  }
+  return '';
+}
+function openRamadan() {
+  const R = S.ramadan, td = today();
+  const meds = S.meds.filter(m => !isPrn(m) && m.times.length && (!m.end || m.end >= td));
+  const planOpts = m => (m.times.length === 1 ? ['auto', 'suhoor', 'keep'] : ['auto', 'keep'])
+    .map(k => `<option value="${k}" ${(m.ramadanPlan || 'auto') === k ? 'selected' : ''}>${t('rmPlans')(m.times.length)[k]}</option>`).join('');
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:12px"><div class="micon" style="background:var(--brand-soft);font-size:26px">🌙</div>
+      <div class="grow"><h3 style="margin:0">${t('rmTitle')}</h3><div class="muted" style="font-size:13px">${t('rmSub')}</div></div>
+      <button class="tgl ${R.on ? 'on' : ''}" onclick="toggleRamadan()"></button></div>
+    <div class="row field">
+      <div class="grow"><label class="lbl">🌅 ${t('rmSuhoor')}</label><input type="time" value="${R.suhoor}" onchange="S.ramadan.suhoor=this.value||S.ramadan.suhoor;save();render();openRamadan()"></div>
+      <div class="grow"><label class="lbl">🌇 ${t('rmIftar')}</label><input type="time" value="${R.iftar}" onchange="S.ramadan.iftar=this.value||S.ramadan.iftar;save();render();openRamadan()"></div></div>
+    ${R.on ? `<div class="field"><label class="lbl">${t('rmUntil')}</label><input type="date" value="${R.to}" onchange="if(this.value){S.ramadan.to=this.value;save();render()}"></div>` : ''}
+    <div class="sec-title" style="margin-top:4px">${I.pill}<span>${t('rmMeds')}</span></div>
+    <div class="stack" style="gap:10px">${meds.map(m => {
+      const before = m.times.map(fmtTime).join(t('list'));
+      const preview = ramadanMap(m);
+      const warns = ramadanWarnings(m);
+      return `<div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:12px">
+        <div class="row">${micon(m, 40)}<div class="grow"><b>${esc(m.name)}</b>
+          <div class="muted num" style="font-size:13px">${before} → <b style="color:var(--brand)">${preview.map(fmtTime).join(t('list'))}</b></div></div>
+          <select style="width:auto;padding:8px" onchange="setRamadanPlan('${m.id}',this.value)">${planOpts(m)}</select></div>
+        ${warns.map(w => `<div class="hint" style="color:var(--warn);font-weight:600">⚠️ ${w}</div>`).join('')}</div>`;
+    }).join('') || `<p class="muted">${t('noMeds')}</p>`}</div>
+    <p class="muted" style="font-size:12px;margin-top:14px;line-height:1.6">⚠️ ${t('rmGeneral')}</p>`);
+}
+function toggleRamadan() {
+  const R = S.ramadan, td = today();
+  R.on = !R.on;
+  if (R.on) { R.from = td; R.to = ramadanEnd(td); }
+  haptic(); save(); render(); openRamadan(); toast(R.on ? t('rmOn') : t('rmOff'));
+}
+function setRamadanPlan(id, v) { const m = S.meds.find(x => x.id === id); if (m) { m.ramadanPlan = v; save(); render(); openRamadan(); } }
+
+/* =====================================================================
+   Voice text for alarms (spoken by the Android app / browser)
+   ===================================================================== */
+function amountSpeech(a, unit) {
+  a = +a;
+  if (S.lang !== 'ar') return `${fmtNum(a)} ${unit}`;
+  const whole = Math.floor(a), frac = +(a - whole).toFixed(2);
+  const fw = { 0.25: 'ربع', 0.5: 'نص', 0.75: 'ثلاث أرباع' }[frac];
+  const pill = unit === 'حبة' || unit === 'كبسولة';
+  let w = '';
+  if (pill) w = whole === 0 ? '' : whole === 1 ? (fw ? unit : `${unit} ${unit === 'حبة' ? 'وحدة' : 'وحدة'}`) : whole === 2 ? (unit === 'حبة' ? 'حبتين' : 'كبسولتين') : `${whole} ${unit === 'حبة' ? 'حبات' : 'كبسولات'}`;
+  else w = whole ? `${whole} ${unit}` : '';
+  if (!fw) return w || `${fmtNum(a)} ${unit}`;
+  if (!whole) return `${fw} ${unit}`;
+  return `${w} و${fw}`;
+}
+function speechFor(p, slots) {
+  const self = p.id === S.profiles[0]?.id;
+  const head = S.lang === 'ar' ? (self ? `حان موعد دوائك يا ${p.name}` : `حان موعد دواء ${p.name}`)
+    : (self ? `${p.name}, it's time for your medicine` : `It's time for ${p.name}'s medicine`);
+  const meds = slots.map(s => `${s.med.name}، ${amountSpeech(s.amount, s.med.unit)}${s.med.meal && s.med.meal !== 'none' ? '، ' + t('meals')[s.med.meal] : ''}`);
+  return `${head}. ${meds.join('. ')}.`;
+}
+function testVoice() {
+  const p = S.profiles.find(x => x.id === S.active) || S.profiles[0];
+  const m = S.meds.find(x => x.profileId === p.id && !isPrn(x));
+  const text = m ? speechFor(p, [{ med: m, amount: stageAmount(m, today()) }]) : speechFor(p, [{ med: { name: t('testMedName'), unit: t('units')[0], meal: 'after' }, amount: 1.5 }]);
+  if (nativeHas('testVoice')) { DawaNative.testVoice(text, S.lang); return; }
+  speakBrowser(text);
+}
+function speakBrowser(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text); u.lang = S.lang === 'ar' ? 'ar-JO' : 'en-GB'; u.rate = .95;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+/* =====================================================================
+   Home-screen widget data (Android)
+   ===================================================================== */
+function widgetData() {
+  const td = today(), tm = addDays(td, 1), days = {}, groups = new Map();
+  for (const d of [td, tm]) {
+    let total = 0, done = 0;
+    for (const p of S.profiles) for (const s of slotsFor(p.id, d)) {
+      total++; if (s.status === 'taken') done++;
+      if (s.status) continue;
+      const snz = S.snoozes[s.key] ? Date.parse(S.snoozes[s.key]) : null;
+      const at = snz || new Date(`${d}T${s.time}:00`).getTime();
+      const gk = p.id + '|' + d + '|' + s.time;
+      if (!groups.has(gk)) groups.set(gk, { date: d, at, time: fmtTime(s.time), person: p.name, color: p.color, parts: [], keys: [] });
+      const g = groups.get(gk); g.parts.push(`${s.med.name} · ${fmtNum(s.amount)} ${s.med.unit}`); g.keys.push(s.key);
+    }
+    days[d] = { total, done };
+  }
+  const items = [...groups.values()].sort((a, b) => a.at - b.at).slice(0, 30)
+    .map(g => ({ date: g.date, at: g.at, time: g.time, person: S.profiles.length > 1 ? g.person : '', text: g.parts.join('\n'), keys: g.keys.join(',') }));
+  return { days, items, labels: { title: t('appName'), taken: t('takenAction'), allDone: t('wAllDone'), none: t('noneToday'), open: t('wOpen'), next: t('wNext'), late: t('late') } };
+}
+
+/* =====================================================================
+   Day details popup + month calendar
+   ===================================================================== */
+const prevIcon = () => S.lang === 'ar' ? I.chevR : I.chevL, nextIcon = () => S.lang === 'ar' ? I.chevL : I.chevR;
+let dayBack = null;   // where the day popup's back button returns to
+function openDay(date, back) {
+  dayBack = back || null;
+  const pid = S.active, td = today(), now = nowHM();
+  const slots = slotsFor(pid, date);
+  const medIds = [...new Set(slots.map(s => s.med.id))];
+  const prnMeds = S.meds.filter(m => m.profileId === pid && isPrn(m) && !m.paused && isActiveOn(m, date));
+  const prnLogs = S.prn.filter(x => x.at.slice(0, 10) === date && S.meds.find(m => m.id === x.medId)?.profileId === pid);
+  const st = dayStats(pid, date, now, td);
+  const isPast = date < td, isFuture = date > td;
+  const r = S.inr[pid];
+  const inrTest = r?.tests.find(x => x.date === date);
+  const rows = slots.map(s => {
+    const m = s.med;
+    let state;
+    if (s.status === 'taken') state = `<span class="tag ok">✓ ${s.log?.at ? t('takeAt')(fmtClock(s.log.at)) : t('taken')}</span>`;
+    else if (s.status === 'skipped') state = `<span class="tag bad">${t('skipped')}</span>`;
+    else if (isPast || (date === td && s.time < now)) state = `<span class="tag bad">${t('missedN')}</span>`;
+    else state = `<span class="tag">${t('dayPending')}</span>`;
+    return `<div class="set-row">${micon(m, 40)}
+      <div class="body"><b>${esc(m.name)}</b><small style="color:var(--text)"><span class="num">${fmtTime(s.time)}</span> · <b>${fmtNum(s.amount)} ${esc(m.unit)}</b>${m.meal && m.meal !== 'none' ? ` · ${t('meals')[m.meal]}` : ''}</small></div>
+      ${state}</div>`;
+  }).join('');
+  const summary = !slots.length ? t('dayNone') : t('daySummary')(slots.length, medIds.length);
+  const progress = slots.length && !isFuture ? `<div class="kpis" style="margin:12px 0 4px">
+      <div class="card kpi" style="box-shadow:none;border:1.5px solid var(--line)"><b class="num" style="color:var(--ok)">${st.taken}</b><span>${t('takenN')}</span></div>
+      <div class="card kpi" style="box-shadow:none;border:1.5px solid var(--line)"><b class="num" style="color:var(--bad)">${st.missed + st.skipped}</b><span>${t('missedN')}</span></div>
+      <div class="card kpi" style="box-shadow:none;border:1.5px solid var(--line)"><b class="num">${st.total - st.taken - st.skipped - st.missed}</b><span>${t('dayPending')}</span></div></div>` : '';
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:4px">
+      ${dayBack ? `<button class="b-more" onclick="${dayBack}" aria-label="calendar" style="color:var(--brand)">${I.cal}</button>` : ''}
+      <div class="grow"><h3 style="margin:0">${fmtDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}</h3>
+        <div class="muted" style="font-size:14px">${summary}${ramadanActive(date) ? ' · 🌙' : ''}</div></div>
+      <div class="row" style="gap:4px;flex:none">
+        <button class="b-more" onclick="openDay('${addDays(date, -1)}'${dayBack ? `,'${dayBack.replace(/'/g, "\\'")}'` : ''})" aria-label="prev">${prevIcon()}</button>
+        <button class="b-more" onclick="openDay('${addDays(date, 1)}'${dayBack ? `,'${dayBack.replace(/'/g, "\\'")}'` : ''})" aria-label="next">${nextIcon()}</button></div>
+    </div>
+    ${progress}
+    ${slots.length ? `<div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 12px;margin-top:10px">${rows}</div>` : `<div class="empty" style="padding:18px 0 6px"><p style="margin:0">🌿 ${t('dayNone')}</p></div>`}
+    ${prnMeds.length ? `<div class="sec-title">${I.info}<span>${t('asNeeded')}</span></div>
+      <div class="card" style="box-shadow:none;border:1.5px solid var(--line);padding:2px 12px">${prnMeds.map(m => {
+        const n = prnLogs.filter(x => x.medId === m.id).length;
+        return `<div class="set-row">${micon(m, 36)}<div class="body"><b>${esc(m.name)}</b><small>${fmtNum(stageAmount(m, date))} ${esc(m.unit)}</small></div><span class="tag ${n ? 'ok' : ''}">${n ? `${n}×` : '—'}</span></div>`;
+      }).join('')}</div>` : ''}
+    ${inrTest ? `<div class="ix ${INR_TAG[inrStatus(inrTest.value, r)] === 'ok' ? 'ok' : INR_TAG[inrStatus(inrTest.value, r)]}" style="margin-top:12px">🩸 <b>INR ${fmtNum(inrTest.value)}</b> — ${t('inrSt')[inrStatus(inrTest.value, r)]}${inrTest.dose ? ` · ${esc(inrTest.dose)}` : ''}</div>` : ''}
+    ${r?.next === date ? `<div class="ix warn" style="margin-top:12px">🩸 ${t('inrToday')}</div>` : ''}
+    ${slots.length && !isFuture ? `<button class="btn soft" style="margin-top:14px" onclick="closeModal();tab='today';pickDay('${date}');render();window.scrollTo(0,0)">${t('dayOpen')}</button>` : ''}`);
+}
+function openMonth(ym) {
+  const td = today();
+  ym = ym || td.slice(0, 7);
+  const [y, mo] = ym.split('-').map(Number);
+  const first = `${ym}-01`, daysIn = new Date(y, mo, 0).getDate();
+  const firstDow = S.lang === 'ar' ? 6 : 0;
+  const lead = (D(first).getDay() - firstDow + 7) % 7;
+  const prev = mo === 1 ? `${y - 1}-12` : `${y}-${pad(mo - 1)}`, next = mo === 12 ? `${y + 1}-01` : `${y}-${pad(mo + 1)}`;
+  const heads = Array.from({ length: 7 }, (_, i) => `<div class="h">${t('daysShort')[(firstDow + i) % 7]}</div>`).join('');
+  const now = nowHM();
+  const cells = Array.from({ length: lead }, () => '<div></div>').concat(Array.from({ length: daysIn }, (_, i) => {
+    const d = `${ym}-${pad(i + 1)}`, st = dayStats(S.active, d, now, td);
+    let lv = '';
+    if (st.total && d <= td && st.due) { const p = st.taken / st.due; lv = p >= 1 ? 'l4' : p >= .75 ? 'l3' : p > 0 ? 'l2' : 'l1'; }
+    const inr = S.inr[S.active]?.tests.some(x => x.date === d) || S.inr[S.active]?.next === d;
+    return `<button class="c num ${lv} ${d === td ? 'today' : ''}" onclick="openDay('${d}','openMonth(\\'${ym}\\')')">
+      <span>${i + 1}</span>${st.total ? `<small>${st.total}</small>` : ''}${inr ? '<i class="inr-dot"></i>' : ''}</button>`;
+  })).join('');
+  const title = new Date(y, mo - 1, 15).toLocaleDateString(locale(), { month: 'long', year: 'numeric' });
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:14px">
+      <button class="b-more" onclick="openMonth('${prev}')">${prevIcon()}</button>
+      <h3 class="grow" style="margin:0;text-align:center">${title}</h3>
+      <button class="b-more" onclick="openMonth('${next}')">${nextIcon()}</button></div>
+    <div class="cal month">${heads}${cells}</div>
+    <p class="muted" style="font-size:12px;text-align:center;margin-top:12px">${t('monthHint')}</p>
+    ${ym !== td.slice(0, 7) ? `<button class="btn ghost small" style="margin:6px auto 0" onclick="openMonth()">${t('backToday')}</button>` : ''}`);
+}
+
+/* =====================================================================
    Stats
    ===================================================================== */
 function renderStats() {
@@ -1519,11 +2005,11 @@ function renderStats() {
   const heads = Array.from({ length: 7 }, (_, i) => `<div class="h">${t('daysShort')[(first + i) % 7]}</div>`).join('');
   const cells = Array.from({ length: 35 }, (_, i) => {
     const d = addDays(startDay, i);
-    if (d > td) return `<div class="c" style="opacity:.35">${D(d).getDate()}</div>`;
+    if (d > td) return `<button class="c" style="opacity:.45" onclick="openDay('${d}')">${D(d).getDate()}</button>`;
     const s = dayStats(pid, d, now, td);
     let lv = '';
     if (s.due) { const p = s.taken / s.due; lv = p >= 1 ? 'l4' : p >= .75 ? 'l3' : p > 0 ? 'l2' : 'l1'; }
-    return `<div class="c num ${lv} ${d === td ? 'today' : ''}">${D(d).getDate()}</div>`;
+    return `<button class="c num ${lv} ${d === td ? 'today' : ''}" onclick="openDay('${d}')">${D(d).getDate()}</button>`;
   }).join('');
 
   // Per medicine
@@ -1564,21 +2050,55 @@ function renderStats() {
     <div class="card" style="margin-top:16px;display:flex;gap:12px;align-items:center">
       <div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.doc}</div>
       <div style="flex:1;min-width:0"><div style="font-weight:700">${t('report')}</div><div class="muted" style="font-size:13px">${t('reportHint')}</div></div>
-      <button class="b-soft" onclick="shareReport()">${I.upload.replace('<svg', '<svg width="18" height="18"')}</button>
+      <button class="b-soft" onclick="openReport()">${I.upload.replace('<svg', '<svg width="18" height="18"')}</button>
     </div>`;
 }
-function buildReport() {
-  const pid = S.active, p = S.profiles.find(x => x.id === pid), td = today(), now = nowHM();
+function reportStats(pid, days) {
+  const td = today(), now = nowHM();
   let taken = 0, skipped = 0, missed = 0;
-  for (let i = 0; i < 30; i++) { const s = dayStats(pid, addDays(td, -i), now, td); taken += s.taken; skipped += s.skipped; missed += s.missed; }
+  for (let i = 0; i < days; i++) { const st = dayStats(pid, addDays(td, -i), now, td); taken += st.taken; skipped += st.skipped; missed += st.missed; }
   const due = taken + skipped + missed;
+  const perMed = S.meds.filter(m => m.profileId === pid && !isPrn(m)).map(m => {
+    let tk = 0, du = 0;
+    for (let i = 0; i < days; i++) {
+      const d = addDays(td, -i);
+      for (const sl of slotsFor(pid, d)) {
+        if (sl.med.id !== m.id) continue;
+        if (sl.status === 'taken') { tk++; du++; } else if (sl.status || d < td || sl.time <= now) du++;
+      }
+    }
+    return { m, tk, du, p: du ? Math.round(tk / du * 100) : null };
+  }).filter(x => x.du);
+  return { taken, skipped, missed, due, pct: due ? Math.round(taken / due * 100) : 0, perMed };
+}
+const reportOpts = () => (S.reportOpts ||= { days: 30, labs: true });
+function openReport() {
+  const o = reportOpts(), pid = S.active, hasLabs = !!S.inr[pid]?.tests.length;
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:14px"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.doc}</div>
+      <div class="grow"><h3 style="margin:0">${t('report')}</h3><div class="muted" style="font-size:13px">${esc(S.profiles.find(x => x.id === pid).name)}</div></div></div>
+    <div class="field"><label class="lbl">${t('rPeriod')}</label>
+      <div class="range">${[7, 30, 90].map(d => `<button class="${o.days === d ? 'on' : ''}" onclick="reportOpts().days=${d};save();openReport()">${t('rDays')(d)}</button>`).join('')}</div></div>
+    <div class="field card switch" style="padding:12px 14px;box-shadow:none;border:1.5px solid var(--line)">
+      <div><div style="font-weight:700">🧪 ${t('rLabs')}</div><div class="hint" style="margin:0">${hasLabs ? t('rLabsHint') : t('rLabsNone')}</div></div>
+      <button type="button" class="tgl ${o.labs ? 'on' : ''}" onclick="reportOpts().labs=!reportOpts().labs;save();openReport()"></button></div>
+    <div class="stack">
+      <button class="btn" onclick="printReport()">${I.doc.replace('<svg', '<svg width="20" height="20"')} ${t('rPdf')}</button>
+      <button class="btn soft" onclick="shareReport()">${I.upload.replace('<svg', '<svg width="20" height="20"')} ${t('rText')}</button>
+    </div>
+    <p class="muted" style="font-size:12px;margin-top:12px;line-height:1.6">${t('rPdfHint')}</p>`);
+}
+function buildReport(o = reportOpts()) {
+  const pid = S.active, p = S.profiles.find(x => x.id === pid), td = today();
+  const st = reportStats(pid, o.days);
   const meds = S.meds.filter(m => m.profileId === pid && (!m.end || m.end >= td));
   const lines = [
     t('rTitle')(p.name), fmtDate(td, { day: 'numeric', month: 'long', year: 'numeric' }), '',
     `▪ ${t('rMeds')}:`,
     ...meds.map(m => `• ${m.name} — ${sched(m).mode === 'pattern' ? '' : `${fmtNum(stageAmount(m, td))} ${m.unit}${t('list')}`}${scheduleLabel(m)}${m.times.length ? ` — ${m.times.map(fmtTime).join(t('list'))}` : ''}${m.meal && m.meal !== 'none' ? ` — ${t('meals')[m.meal]}` : ''}${m.paused ? ` (${t('paused')})` : ''}${m.notes ? `\n   ${m.notes}` : ''}`),
-    '', `▪ ${t('rAdh')}: ${due ? Math.round(taken / due * 100) : 0}%`,
-    `   ${t('takenN')}: ${taken} · ${t('skippedN')}: ${skipped} · ${t('missedN')}: ${missed}`,
+    '', `▪ ${t('rAdhN')(o.days)}: ${st.pct}%`,
+    `   ${t('takenN')}: ${st.taken} · ${t('skippedN')}: ${st.skipped} · ${t('missedN')}: ${st.missed}`,
+    ...(o.labs ? inrReportLines(pid) : []),
     '', `— ${t('rGen')}`
   ];
   return lines.join('\n');
@@ -1588,6 +2108,89 @@ async function shareReport() {
   if (NATIVE) { try { DawaNative.share(title, text); return; } catch (e) {} }
   if (navigator.share) { try { await navigator.share({ title, text }); return; } catch (e) { return; } }
   try { await navigator.clipboard.writeText(text); toast(t('copied')); } catch (e) { toast(t('copied')); }
+}
+/** Printable A4 report (saved as PDF through the system print dialog). */
+function reportHtml(o = reportOpts()) {
+  const pid = S.active, p = S.profiles.find(x => x.id === pid), td = today();
+  const st = reportStats(pid, o.days), str = streak(pid);
+  const meds = S.meds.filter(m => m.profileId === pid && (!m.end || m.end >= td));
+  const r = S.inr[pid], labs = o.labs && r?.tests.length ? sortedTests(pid).slice(-5).reverse() : [];
+  const ixRows = meds.map(m => ({ m, e: medIxFlag(m) })).filter(x => x.e);
+  const dir = S.lang === 'ar' ? 'rtl' : 'ltr';
+  const cell = v => `<td>${v}</td>`;
+  const stCls = { ok: 'ok', low: 'warn', high: 'bad', crit: 'bad' };
+  return `<!DOCTYPE html><html lang="${S.lang}" dir="${dir}"><head><meta charset="utf-8"><title>${esc(t('rTitle')(p.name))}</title>
+<style>
+@page { size: A4; margin: 14mm; }
+:root { --line:#d9e1df; --faint:#7d8e8a; --text:#13201e; --card:#fff; --brand:#0f766e; --ok:#15803d; --ok-soft:#dcfce7; --warn:#b45309; --bad:#b91c1c; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, "Segoe UI", Roboto, "Noto Sans Arabic", Tahoma, sans-serif; color: var(--text); font-size: 12px; line-height: 1.55; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.head { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--brand); padding-bottom: 10px; margin-bottom: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.logo { width: 42px; height: 42px; border-radius: 12px; background: var(--brand); display: grid; place-items: center; }
+h1 { font-size: 20px; color: var(--brand); } h2 { font-size: 14px; margin: 18px 0 8px; color: var(--brand); border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+.meta { text-align: end; color: #4b5a57; font-size: 11px; }
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.tile { border: 1px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; }
+.tile b { display: block; font-size: 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 6px; text-align: start; vertical-align: top; }
+th { background: #f1f6f5; font-size: 11px; color: #4b5a57; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 10.5px; font-weight: 700; }
+.ok { background: #dcfce7; color: #15803d; } .warn { background: #fef3c7; color: #b45309; } .bad { background: #fee2e2; color: #b91c1c; } .gray { background: #eef2f1; color: #4b5a57; }
+.chart { max-width: 420px; margin: 8px auto 0; } .chart svg { width: 100%; height: auto; direction: ltr; }
+.note { margin-top: 18px; font-size: 10.5px; color: #5f6f6c; border-top: 1px solid var(--line); padding-top: 8px; }
+tr, .tile { page-break-inside: avoid; }
+</style></head><body>
+<div class="head">
+  <div class="brand"><div class="logo"><svg viewBox="0 0 32 32" width="30" height="30"><g transform="rotate(-45 16 16)"><rect x="4" y="10.5" width="24" height="11" rx="5.5" fill="#fff"/><path d="M16 10.5h6.5a5.5 5.5 0 0 1 0 11H16z" fill="#5eead4"/></g></svg></div>
+    <div><h1>${esc(t('rTitle')(p.name))}</h1><div style="color:#4b5a57">${esc(p.relation || '')}${p.id === S.profiles[0].id && S.user.phone ? ` · <span dir="ltr">${esc(S.user.phone)}</span>` : ''}</div></div></div>
+  <div class="meta">${t('rDate')}: ${fmtDate(td, { day: 'numeric', month: 'long', year: 'numeric' })}<br>${t('rPeriod')}: ${t('rDays')(o.days)}</div>
+</div>
+
+<div class="tiles">
+  <div class="tile"><b style="color:var(--brand)">${st.pct}%</b>${t('adherence')}</div>
+  <div class="tile"><b style="color:var(--ok)">${st.taken}</b>${t('takenN')}</div>
+  <div class="tile"><b style="color:var(--bad)">${st.missed + st.skipped}</b>${t('missedN')}</div>
+  <div class="tile"><b>${str}</b>${t('streak')}</div>
+</div>
+
+<h2>${t('rMeds')}</h2>
+<table><thead><tr><th>${t('medName')}</th><th>${t('stagesTitle')}</th><th>${t('schedule')}</th><th>${t('times')}</th><th>${t('notes')}</th></tr></thead><tbody>
+${meds.map(m => `<tr>${cell(`<b>${esc(m.name)}</b>${m.paused ? ` <span class="pill warn">${t('paused')}</span>` : ''}`)}
+  ${cell(sched(m).mode === 'pattern' ? esc(m.unit) : `${fmtNum(stageAmount(m, td))} ${esc(m.unit)}`)}
+  ${cell(esc(scheduleLabel(m)))}
+  ${cell(m.times.length ? m.times.map(fmtTime).join('<br>') : '—')}
+  ${cell([m.meal && m.meal !== 'none' ? t('meals')[m.meal] : '', m.notes ? esc(m.notes) : ''].filter(Boolean).join(' · ') || '—')}</tr>`).join('') || `<tr><td colspan="5">—</td></tr>`}
+</tbody></table>
+
+${st.perMed.length ? `<h2>${t('rAdhN')(o.days)}</h2>
+<table><thead><tr><th>${t('medName')}</th><th>${t('adherence')}</th><th>${t('takenN')}</th></tr></thead><tbody>
+${st.perMed.map(x => `<tr><td>${esc(x.m.name)}</td><td><span class="pill ${x.p >= 90 ? 'ok' : x.p >= 70 ? 'warn' : 'bad'}">${x.p}%</span></td><td>${x.tk} / ${x.du}</td></tr>`).join('')}
+</tbody></table>` : ''}
+
+${labs.length ? `<h2>🧪 ${t('rLabsTitle')} — INR (${t('inrTarget')} ${r.low}–${r.high})</h2>
+<table><thead><tr><th>${t('inrDate')}</th><th>INR</th><th>${t('rStatus')}</th><th>${t('inrDose')}</th></tr></thead><tbody>
+${labs.map(x => { const s2 = inrStatus(x.value, r); return `<tr><td>${fmtDate(x.date, { day: 'numeric', month: 'short', year: 'numeric' })}</td><td><b>${fmtNum(x.value)}</b></td>
+  <td><span class="pill ${stCls[s2]}">${t('inrSt')[s2]}</span></td><td>${esc(x.dose || '—')}${x.changed ? ` <span class="pill gray">${t('inrChanged')}</span>` : ''}${x.note ? `<br><span style="color:#5f6f6c">${esc(x.note)}</span>` : ''}</td></tr>`; }).join('')}
+</tbody></table>
+<div class="chart">${inrChartSvg(pid, 5, true)}</div>` : ''}
+
+${ixRows.length ? `<h2>⚠️ ${t('ixTitle')}</h2>
+<table><tbody>${ixRows.map(x => `<tr><td><b>${esc(x.m.name)}</b></td><td><span class="pill ${SEV[x.e.sev] === 'brand' ? 'gray' : SEV[x.e.sev]}">${sevLabel(x.e.sev)}</span> ${t('with')} ${TARGETS[x.e.t][S.lang]}</td><td>${x.e[S.lang][0]}</td></tr>`).join('')}</tbody></table>` : ''}
+
+<div class="note">${t('rGen')} · ${t('rNote')}</div>
+</body></html>`;
+}
+function printReport() {
+  const html = reportHtml(), name = `${t('report')} - ${S.profiles.find(x => x.id === S.active).name} - ${today()}`;
+  if (nativeHas('printHtml')) { DawaNative.printHtml(html, name); return; }
+  if (NATIVE) { toast(t('oldApk')); return; }
+  const w = window.open('', '_blank');
+  if (!w) { toast(t('rPopup')); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+  w.onload = () => setTimeout(() => w.print(), 200);
+  setTimeout(() => { try { w.print(); } catch (e) {} }, 700);
 }
 
 /* =====================================================================
@@ -1663,6 +2266,11 @@ function openSettings() {
         <div class="body">${t('checkup')}<small>${alarmHealthy(nativeStatus()) ? t('notifNative') : t('ckWarn')}</small></div>
         <button class="btn small" onclick="openCheckup()">${t('checkup')}</button></div>`
       : `<div class="set-row"><span class="ico">${I.bell}</span><div class="body">${t('notif')}: <b>${nOk ? t('notifOn') : t('notifOff')}</b><small>${nHint}</small></div>${nBtn}</div>`}
+      <div class="set-row"><span class="ico">${I.voice}</span><div class="body">${t('voice')}<small>${t('voiceHint')}</small></div>
+        <button class="btn ghost small" onclick="testVoice()">${t('testVoiceBtn')}</button>
+        <button class="tgl ${S.voice ? 'on' : ''}" onclick="S.voice=!S.voice;save();openSettings()"></button></div>
+      <div class="set-row" style="cursor:pointer" onclick="openRamadan()"><span class="ico" style="font-size:18px">🌙</span><div class="body">${t('rmTitle')}<small>${S.ramadan.on ? t('rmActive')(fmtTime(S.ramadan.suhoor), fmtTime(S.ramadan.iftar)) : t('rmSub')}</small></div><span class="muted">›</span></div>
+      <div class="set-row" style="cursor:pointer" onclick="openInr()"><span class="ico" style="background:var(--bad-soft);color:var(--bad)">${I.drop}</span><div class="body">${t('inrTitle')}<small>${t('inrSub')}</small></div><span class="muted">›</span></div>
       <div class="set-row"><span class="ico">${I.globe}</span><div class="body">${t('language')}</div><button class="btn ghost small" onclick="toggleLang();openSettings()">${t('otherLang')}</button></div>
       <div class="set-row"><span class="ico">${I.palette}</span><div class="body">${t('theme')}</div>
         <div class="range" style="width:190px">${['auto', 'light', 'dark'].map(th => `<button class="${S.theme === th ? 'on' : ''}" onclick="setTheme('${th}')">${t('themes')[th]}</button>`).join('')}</div></div>
@@ -1811,6 +2419,7 @@ function checkReminders() {
       const dueNow = snoozeAt ? nowMs >= snoozeAt : (nowM >= toMin(s.time) && nowM - toMin(s.time) <= 60);
       if (!dueNow) continue;
       S.notified[s.key] = 1; changed = true;
+      if (!NATIVE && S.voice) speakBrowser(speechFor(p, [s]));
       notify(t('reminderTitle')(p.name), t('reminderBody')(s.med.name, `${fmtNum(s.amount)} ${s.med.unit}`), s.key, { key: s.key });
     }
   }
@@ -1841,10 +2450,17 @@ function buildAlarms() {
       id: hashKey(g.p.id + '|' + g.at), at: g.at, keys: g.slots.map(s => s.key).join(','),
       title: t('reminderTitle')(g.p.name), body: lines.join('\n'), person: g.p.name, timeLabel: fmtTime(hm),
       lblTaken: t('takenAction'), lblSnooze: t('snooze10'), lblClose: t('close'), lblHeader: t('alarmHeader'),
+      speech: S.voice ? speechFor(g.p, g.slots) : '', lang: S.lang, voice: S.voice ? '1' : '',
       // v1 app compatibility
       key: g.slots[0].key, action: t('takenAction')
     };
   });
+  for (const p of S.profiles) {
+    const r = S.inr[p.id];
+    if (!r?.next) continue;
+    const at = new Date(`${r.next}T09:00:00`).getTime();
+    if (at > now) out.push({ id: hashKey('inr|' + p.id + '|' + r.next), at, keys: '', title: t('inrRemTitle'), body: t('inrRemBody')(p.name), person: p.name, timeLabel: fmtTime('09:00'), lblHeader: t('inrRemTitle') });
+  }
   return out.sort((a, b) => a.at - b.at).slice(0, 450);
 }
 const nativeHas = fn => NATIVE && typeof window.DawaNative[fn] === 'function';
@@ -1904,7 +2520,10 @@ let nativeTimer;
 function syncNative() {
   if (!NATIVE) return;
   clearTimeout(nativeTimer);
-  nativeTimer = setTimeout(() => { try { DawaNative.schedule(JSON.stringify(S.user ? buildAlarms() : [])); } catch (e) {} }, 300);
+  nativeTimer = setTimeout(() => {
+    try { DawaNative.schedule(JSON.stringify(S.user ? buildAlarms() : [])); } catch (e) {}
+    try { if (nativeHas('setWidget')) DawaNative.setWidget(JSON.stringify(S.user ? widgetData() : { days: {}, items: [], labels: {} })); } catch (e) {}
+  }, 300);
 }
 
 /* =====================================================================
@@ -1927,6 +2546,7 @@ window.nativeMark = keys => {
   for (const key of String(keys).split(',').filter(Boolean)) if (S.log[key]?.status !== 'taken') markSilently(key, new Date().toISOString());
   save(); tab = 'today'; viewDate = null; render(); toast(t('doseLogged'));
 };
+window.nativeVoiceResult = r => { if (r === 'missing') toast(t('voiceMissing')); else if (r === 'noengine') toast(t('voiceNoEngine')); };
 window.nativeResume = () => { S = load(); applyPendingMarks(); render(); checkReminders(); syncNative(); };
 window.nativeBack = () => {
   if (!document.getElementById('confirm').classList.contains('hidden')) { document.getElementById('confirmNo').click(); return true; }

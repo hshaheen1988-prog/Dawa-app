@@ -132,6 +132,7 @@ public class AlarmActivity extends Activity {
             Button taken = button(Alarms.label(extras, "lblTaken", "✓"), Color.WHITE, 0xFF0F766E);
             taken.setOnClickListener(v -> {
                 Alarms.addPendingMarks(this, keys);
+                DoseWidget.markTaken(this, keys);
                 done();
             });
             root.addView(taken, buttonLp(dp(20)));
@@ -150,6 +151,7 @@ public class AlarmActivity extends Activity {
     }
 
     private void done() {
+        AlarmService.stop(this);
         Alarms.cancel(this, extras.getInt("id", 1));
         // Open the app so the dose shows as taken right away
         Intent open = new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);

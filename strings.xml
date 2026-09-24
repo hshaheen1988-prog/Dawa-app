@@ -2,5 +2,8 @@
 <resources>
     <string name="app_name">دوائي</string>
     <string name="channel_name">تذكير الأدوية</string>
+    <string name="channel_voice_name">تذكير الأدوية (صوتي)</string>
     <string name="channel_desc">تنبيهات مواعيد الأدوية</string>
+    <string name="widget_name">دوائي — الجرعة القادمة</string>
+    <string name="widget_desc">الجرعة القادمة وزر أخذته</string>
 </resources>

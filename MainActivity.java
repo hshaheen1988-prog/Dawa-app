@@ -129,11 +129,15 @@ public class MainActivity extends Activity {
         web.evaluateJavascript("window.nativeMark && window.nativeMark('" + key + "')", null);
     }
 
-    /** Called when a dose is marked from a notification while the app is open. */
+    /** Called when a dose is marked from a notification or the widget while the app is open. */
     static void refreshIfShowing() {
+        runJs("window.nativeResume && window.nativeResume()");
+    }
+
+    static void runJs(String js) {
         MainActivity a = current.get();
         if (a != null) a.runOnUiThread(() -> {
-            if (a.pageReady) a.web.evaluateJavascript("window.nativeResume && window.nativeResume()", null);
+            if (a.pageReady) a.web.evaluateJavascript(js, null);
         });
     }
 

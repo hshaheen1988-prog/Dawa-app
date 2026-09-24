@@ -2,6 +2,16 @@ package com.hamza.dawa;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
+import android.speech.tts.TextToSpeech;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import java.util.Locale;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +23,8 @@ import org.json.JSONObject;
 /** Methods the web app can call through window.DawaNative. */
 public class Bridge {
     private final Activity activity;
+    private static TextToSpeech voiceTest;
+    private static WebView printView; // kept alive while the print dialog uses it
 
     Bridge(Activity activity) {
         this.activity = activity;
@@ -25,7 +37,67 @@ public class Bridge {
 
     @JavascriptInterface
     public int version() {
-        return 2;
+        return 3;
+    }
+
+    /** Data for the home-screen widget. */
+    @JavascriptInterface
+    public void setWidget(String json) {
+        DoseWidget.save(activity.getApplicationContext(), json);
+    }
+
+    /** Speaks a sample reminder so the user can hear the voice alarm. */
+    @JavascriptInterface
+    public void testVoice(String text, String lang) {
+        activity.runOnUiThread(() -> {
+            try { if (voiceTest != null) voiceTest.shutdown(); } catch (Exception ignored) { }
+            final TextToSpeech[] holder = new TextToSpeech[1];
+            holder[0] = new TextToSpeech(activity.getApplicationContext(), status -> {
+                TextToSpeech tts = holder[0];
+                if (status != TextToSpeech.SUCCESS || tts == null) {
+                    MainActivity.runJs("window.nativeVoiceResult && window.nativeVoiceResult('noengine')");
+                    return;
+                }
+                int r = tts.setLanguage("en".equals(lang) ? Locale.ENGLISH : new Locale("ar"));
+                if (r == TextToSpeech.LANG_MISSING_DATA || r == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    MainActivity.runJs("window.nativeVoiceResult && window.nativeVoiceResult('missing')");
+                    try {
+                        activity.startActivity(new Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA));
+                    } catch (Exception ignored) { }
+                    return;
+                }
+                tts.setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
+                tts.setSpeechRate(0.9f);
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "dawa-test");
+                MainActivity.runJs("window.nativeVoiceResult && window.nativeVoiceResult('ok')");
+            });
+            voiceTest = holder[0];
+        });
+    }
+
+    /** Opens the system print screen for an HTML report ("Save as PDF"). */
+    @JavascriptInterface
+    public void printHtml(String html, String name) {
+        activity.runOnUiThread(() -> {
+            WebView wv = new WebView(activity);
+            final boolean[] done = {false};
+            wv.setWebViewClient(new WebViewClient() {
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    if (done[0]) return;
+                    done[0] = true;
+                    PrintManager pm = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
+                    String job = (name == null || name.isEmpty()) ? "Dawa report" : name;
+                    PrintDocumentAdapter adapter = view.createPrintDocumentAdapter(job);
+                    pm.print(job, adapter, new PrintAttributes.Builder()
+                            .setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());
+                }
+            });
+            printView = wv;
+            wv.loadDataWithBaseURL("file:///android_asset/www/", html, "text/html", "UTF-8", null);
+        });
     }
 
     /** Replaces all scheduled reminders with the given JSON list. */
