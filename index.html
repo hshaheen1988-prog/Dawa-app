@@ -255,6 +255,14 @@ details.fold[open] > summary { margin-bottom: 12px; }
 .filter button { border: none; background: var(--card); box-shadow: var(--shadow); padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); }
 .filter button.on { background: var(--text); color: var(--bg); }
 
+/* Interactions */
+.ix { border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 1.6; border: 1.5px solid var(--line); background: var(--card-2); }
+.ix.bad { background: var(--bad-soft); border-color: color-mix(in srgb, var(--bad) 35%, transparent); }
+.ix.warn { background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 35%, transparent); }
+.ix.brand { background: var(--brand-soft); border-color: color-mix(in srgb, var(--brand) 30%, transparent); }
+.ix.ok { background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 30%, transparent); }
+.ix-entry { display: flex; gap: 12px; align-items: center; padding: 14px; cursor: pointer; margin-bottom: 12px; }
+
 /* Stats */
 .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .kpi { text-align: center; padding: 14px 8px; }
@@ -461,6 +469,7 @@ const I = {
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>',
   box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',
   info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'
 };
 const SHAPES = ['capsule', 'tablet', 'oval', 'liquid', 'drops', 'injection', 'inhaler'];
@@ -530,6 +539,16 @@ const T = {
     resetAll: 'مسح كل البيانات', confirmReset: 'سيُحذف كل شيء نهائياً. هل أنت متأكد؟', version: 'الإصدار',
     reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'أخذته ✓',
     days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], daysShort: ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
+    sev: { 3: 'تفاعل شديد', 2: 'تفاعل متوسط', 1: 'تفاعل بسيط' }, with: 'مع',
+    ixTitle: 'فحص التفاعلات الدوائية', ixWith: 'مع وارفارين وأسيتازولاميد', ixPh: 'اكتب اسم الدواء… مثلاً بروفين',
+    ixMine: 'افحص كل أدويتي', ixMineNone: 'لا توجد تفاعلات معروفة بين أدويتك المسجّلة والوارفارين أو الأسيتازولاميد',
+    ixNone: n => `لا يوجد تفاعل معروف في قائمتنا بين «${n}» والوارفارين أو الأسيتازولاميد`,
+    ixNoneHint: 'هذا لا يعني أنه آمن بالضرورة — تأكد دائماً من الطبيب أو الصيدلاني قبل أي دواء جديد.',
+    ixIsTarget: n => `هذا هو دواء ${n} نفسه. اكتب اسم دواء آخر لفحص تفاعله معه.`,
+    ixNotTaking: n => `(لا يوجد ${n} ضمن أدويتك الحالية)`,
+    ixFormWarn: (n, s) => `${s} مع ${n} الموجود ضمن أدويتك`,
+    ixCardHint: 'اكتب اسم أي دواء لتعرف إذا يتفاعل معهما',
+    ixDisclaimer: 'القائمة تشمل أشهر التفاعلات الموثّقة فقط ولا تغني عن استشارة الطبيب أو الصيدلاني. لا توقف أو تبدأ أي دواء بدون استشارة.',
     alarmHeader: 'حان موعد الدواء', checkup: 'فحص المنبّه', checkupHint: 'تأكد إن كل شي أخضر عشان المنبّه يرن بوقته',
     ckNotif: 'الإشعارات', ckNotifHint: 'لازم تكون مسموحة', ckExact: 'المنبّهات الدقيقة', ckExactHint: 'عشان يرن بالدقيقة بالضبط',
     ckFull: 'شاشة المنبّه', ckFullHint: 'تظهر حتى لو الموبايل مقفول', ckBattery: 'البطارية بدون قيود', ckBatteryHint: 'عشان النظام ما يوقف المنبّه',
@@ -583,6 +602,16 @@ const T = {
     resetAll: 'Erase all data', confirmReset: 'Everything will be deleted permanently. Are you sure?', version: 'Version',
     reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'Taken ✓',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], daysShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+    sev: { 3: 'Serious', 2: 'Moderate', 1: 'Minor' }, with: 'With',
+    ixTitle: 'Drug interaction check', ixWith: 'With warfarin and acetazolamide', ixPh: 'Type a medicine name… e.g. ibuprofen',
+    ixMine: 'Check all my medicines', ixMineNone: 'No known interactions between your medicines and warfarin or acetazolamide',
+    ixNone: n => `No known interaction in our list between “${n}” and warfarin or acetazolamide`,
+    ixNoneHint: "This doesn't necessarily mean it's safe — always check with your doctor or pharmacist before a new medicine.",
+    ixIsTarget: n => `This is ${n} itself. Type another medicine to check it against ${n}.`,
+    ixNotTaking: n => `(${n} is not among your current medicines)`,
+    ixFormWarn: (n, s) => `${s} interaction with your ${n}`,
+    ixCardHint: 'Type any medicine to see if it interacts with them',
+    ixDisclaimer: "The list covers the best-known documented interactions only and doesn't replace your doctor or pharmacist. Never start or stop a medicine without advice.",
     alarmHeader: 'Time for your medicine', checkup: 'Alarm checkup', checkupHint: 'Make sure everything is green so alarms ring on time',
     ckNotif: 'Notifications', ckNotifHint: 'Must be allowed', ckExact: 'Exact alarms', ckExactHint: 'Ring at the exact minute',
     ckFull: 'Alarm screen', ckFullHint: 'Shows even when the phone is locked', ckBattery: 'Unrestricted battery', ckBatteryHint: "So the system doesn't stop alarms",
@@ -992,12 +1021,16 @@ function renderMeds() {
     el.innerHTML = `<div class="card empty">${emptyArt()}<h3>${t('emptyTitle')}</h3><p>${t('emptyText')}</p><button class="btn" onclick="openMedForm()">${t('addMed')}</button></div>`;
     return;
   }
-  el.innerHTML = filter + (list.length ? `<div class="stack">${list.map(m => {
+  const ixEntry = `<div class="card ix-entry" onclick="openInteractions()"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.shield}</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:800">${t('ixTitle')}</div><div class="muted" style="font-size:13px">${t('ixWith')} · ${t('ixCardHint')}</div></div></div>`;
+  el.innerHTML = filter + ixEntry + (list.length ? `<div class="stack">${list.map(m => {
     const tags = [];
     if (m.paused) tags.push(`<span class="tag warn">${t('paused')}</span>`);
     else if (m.end && m.end < td) tags.push(`<span class="tag bad">${t('ended')}</span>`);
     else if (m.start > td) tags.push(`<span class="tag">${t('upcoming')}</span>`);
     if (m.meal && m.meal !== 'none') tags.push(`<span class="tag brand">${t('meals')[m.meal]}</span>`);
+    const fx = medIxFlag(m);
+    if (fx) tags.push(`<span class="tag ${SEV[fx.sev]}" onclick="event.stopPropagation();openInteractions(${JSON.stringify(m.name).replace(/"/g, '&quot;')})">⚠️ ${sevLabel(fx.sev)} · ${TARGETS[fx.t][S.lang]}</span>`);
     const isPat = sched(m).mode === 'pattern';
     const doseTxt = isPat ? '' : `${fmtNum(stageAmount(m, td))} ${esc(m.unit)} ${t('perDose')} · `;
     const dl = daysLeft(m);
@@ -1044,7 +1077,7 @@ function openMedForm(id) {
   openModal(`<div class="grab"></div>
     <div class="row" style="margin-bottom:16px"><div id="fIcon">${micon(m, 52)}</div><h3 class="grow" style="margin:0">${id ? t('editMed') : t('addMed')}</h3></div>
     <form id="medForm" novalidate>
-      <div class="field"><label class="lbl">${t('medName')}</label><input name="name" placeholder="${t('medNamePh')}" value="${esc(m.name)}"></div>
+      <div class="field"><label class="lbl">${t('medName')}</label><input name="name" placeholder="${t('medNamePh')}" value="${esc(m.name)}"><div id="ixWarn">${formIxWarning(m.name)}</div></div>
 
       <div class="field"><label class="lbl">${t('look')}</label>
         <div class="shape-pick">${SHAPES.map(s => `<button type="button" data-shape="${s}" class="${s === m.shape ? 'on' : ''}">${shapeSvg(s, m.color)}</button>`).join('')}</div>
@@ -1127,6 +1160,7 @@ function openMedForm(id) {
   f.querySelectorAll('.opts .opt').forEach(b => b.onclick = () => { f.meal.value = b.dataset.meal; f.querySelectorAll('.opts .opt').forEach(x => x.classList.toggle('on', x === b)); });
   f.addEventListener('input', updatePreview);
   f.addEventListener('change', updatePreview);
+  f.name.addEventListener('input', () => { document.getElementById('ixWarn').innerHTML = formIxWarning(f.name.value); });
   f.addEventListener('click', e => { if (e.target.closest('.x-btn, .add-link')) setTimeout(updatePreview); });
   syncMode();
 
@@ -1222,6 +1256,244 @@ async function deleteMed(id) {
   for (const k of Object.keys(S.snoozes)) if (k.startsWith(id + '|')) delete S.snoozes[k];
   S.prn = S.prn.filter(x => x.medId !== id);
   save(); closeModal(); render();
+}
+
+/* =====================================================================
+   Drug interactions — curated for Warfarin and Acetazolamide
+   sev: 3 = serious (avoid / only under doctor supervision), 2 = moderate (needs monitoring), 1 = minor (be aware)
+   ===================================================================== */
+const TARGETS = {
+  warfarin: { ar: 'وارفارين', en: 'Warfarin', names: ['warfarin', 'coumadin', 'marevan', 'orfarin', 'وارفارين', 'وارفرين', 'كومادين', 'ماريفان', 'مارفان'] },
+  acetazolamide: { ar: 'أسيتازولاميد', en: 'Acetazolamide', names: ['acetazolamide', 'diamox', 'اسيتازولاميد', 'استازولاميد', 'اسيتازولامايد', 'دياموكس', 'ديموكس', 'ديماكس'] }
+};
+const ASPIRIN = ['aspirin', 'acetylsalicylic', 'asa', 'aspocid', 'jusprin', 'cardiprin', 'aspro', 'salicylate', 'اسبرين', 'أسبرين', 'اسبوسيد', 'جوسبرين', 'كارديبرين', 'ساليسيلات'];
+const STEROIDS = ['prednisolone', 'prednisone', 'dexamethasone', 'methylprednisolone', 'hydrocortisone', 'betamethasone', 'medrol', 'decadron', 'بريدنيزولون', 'بريدنيزون', 'ديكساميثازون', 'ديكساميثازون', 'ميدرول', 'هيدروكورتيزون', 'كورتيزون'];
+const IX = [
+  // ---------------- Warfarin ----------------
+  { t: 'warfarin', sev: 3, label: { ar: 'مسكنات الالتهاب (NSAIDs)', en: 'Anti-inflammatory painkillers (NSAIDs)' },
+    names: ['ibuprofen', 'brufen', 'advil', 'nurofen', 'diclofenac', 'voltaren', 'cataflam', 'naproxen', 'naprosyn', 'meloxicam', 'mobic', 'ketoprofen', 'celecoxib', 'celebrex', 'etoricoxib', 'arcoxia', 'indomethacin', 'piroxicam', 'feldene', 'mefenamic', 'ponstan', 'nimesulide',
+      'ايبوبروفين', 'بروفين', 'ادفيل', 'نوروفين', 'ديكلوفيناك', 'فولتارين', 'كاتافلام', 'نابروكسين', 'ميلوكسيكام', 'موبيك', 'كيتوبروفين', 'سيليكوكسيب', 'سيليبريكس', 'اركوكسيا', 'اندوميثاسين', 'بيروكسيكام', 'فيلدين', 'بونستان', 'حمض الميفيناميك'],
+    ar: ['يزيد خطر النزيف بشكل كبير، خاصة نزيف المعدة.', 'تجنّبها. للألم أو الحرارة اسأل طبيبك عن الباراسيتامول بجرعة معتدلة.'],
+    en: ['Greatly raises the risk of bleeding, especially stomach bleeding.', 'Avoid. For pain or fever ask your doctor about paracetamol at a moderate dose.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'الأسبرين', en: 'Aspirin' }, names: ASPIRIN,
+    ar: ['يزيد خطر النزيف.', 'لا تأخذه إلا إذا وصفه طبيبك مع الوارفارين (جرعة قلبية منخفضة) ومع متابعة.'],
+    en: ['Raises the risk of bleeding.', 'Only if your doctor prescribed it together with warfarin (low cardiac dose), with monitoring.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'مضادات الصفائح', en: 'Antiplatelets' },
+    names: ['clopidogrel', 'plavix', 'prasugrel', 'effient', 'ticagrelor', 'brilinta', 'dipyridamole', 'كلوبيدوقريل', 'كلوبيدوجريل', 'بلافكس', 'براسوجريل', 'تيكاجريلور', 'بريلينتا', 'ديبيريدامول'],
+    ar: ['خطر نزيف مرتفع عند الجمع.', 'فقط بقرار طبي واضح ومع متابعة لصيقة.'], en: ['High bleeding risk when combined.', 'Only on a clear medical decision with close follow-up.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'مميعات دم أخرى', en: 'Other blood thinners' },
+    names: ['heparin', 'enoxaparin', 'clexane', 'lovenox', 'tinzaparin', 'rivaroxaban', 'xarelto', 'apixaban', 'eliquis', 'dabigatran', 'pradaxa', 'edoxaban', 'lixiana', 'fondaparinux', 'arixtra',
+      'هيبارين', 'اينوكسابارين', 'كليكسان', 'كلكسان', 'ريفاروكسابان', 'زاريلتو', 'ابيكسابان', 'اليكويس', 'دابيجاتران', 'براداكسا'],
+    ar: ['تمييع مضاعف وخطر نزيف شديد.', 'لا تجمعهم إلا بتعليمات الطبيب (عادةً فقط خلال فترة الانتقال بين الدواءين).'],
+    en: ['Double anticoagulation with a serious bleeding risk.', 'Only on doctor instructions (usually just while switching between the two).'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'ميترونيدازول', en: 'Metronidazole' }, names: ['metronidazole', 'flagyl', 'tinidazole', 'ميترونيدازول', 'فلاجيل', 'فلاجل', 'تينيدازول'],
+    ar: ['يرفع الـ INR بقوة ويزيد خطر النزيف.', 'أخبر طبيبك قبل البدء؛ غالباً تحتاج تعديل جرعة الوارفارين وفحص INR خلال أيام.'],
+    en: ['Strongly raises INR and bleeding risk.', 'Tell your doctor first; warfarin usually needs adjusting with an INR check within days.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'سلفاميثوكسازول/تريميثوبريم', en: 'Co-trimoxazole' }, names: ['sulfamethoxazole', 'trimethoprim', 'cotrimoxazole', 'co-trimoxazole', 'bactrim', 'septrin', 'سبترين', 'باكتريم', 'سلفاميثوكسازول', 'تريميثوبريم'],
+    ar: ['يرفع الـ INR بقوة.', 'يفضّل مضاد حيوي بديل؛ وإذا لزم فحص INR قريب.'], en: ['Strongly raises INR.', 'An alternative antibiotic is preferred; otherwise check INR soon.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'مضادات الفطريات (الآزولات)', en: 'Azole antifungals' },
+    names: ['fluconazole', 'diflucan', 'miconazole', 'daktarin', 'voriconazole', 'vfend', 'itraconazole', 'sporanox', 'ketoconazole', 'nizoral', 'posaconazole',
+      'فلوكونازول', 'ديفلوكان', 'ميكونازول', 'دكتارين', 'داكتارين', 'فوريكونازول', 'ايتراكونازول', 'سبورانوكس', 'كيتوكونازول', 'نيزورال'],
+    ar: ['ترفع الـ INR بشكل كبير، حتى جل الفم (دكتارين).', 'تجنّبها أو استخدمها فقط مع فحص INR قريب بإشراف الطبيب.'],
+    en: ['Markedly raise INR, even the oral gel (Daktarin).', 'Avoid, or use only with an early INR check under medical supervision.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'أميودارون', en: 'Amiodarone' }, names: ['amiodarone', 'cordarone', 'dronedarone', 'multaq', 'اميودارون', 'كوردارون', 'درونيدارون'],
+    ar: ['يرفع الـ INR بقوة، وقد يستمر أثره أسابيع.', 'غالباً يلزم تخفيض جرعة الوارفارين بقرار الطبيب ومتابعة INR متكررة.'],
+    en: ['Strongly raises INR, and the effect can last weeks.', 'Warfarin usually needs lowering by your doctor with frequent INR checks.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'ريفامبيسين', en: 'Rifampicin' }, names: ['rifampicin', 'rifampin', 'rifadin', 'rifabutin', 'ريفامبيسين', 'ريفادين', 'ريفابوتين'],
+    ar: ['يُضعف مفعول الوارفارين بشدة (خطر جلطة).', 'متابعة INR لصيقة وتعديل الجرعة بقرار الطبيب، وأيضاً عند إيقافه.'],
+    en: ['Strongly weakens warfarin (clot risk).', 'Close INR follow-up and dose changes by your doctor, also when it is stopped.'] },
+  { t: 'warfarin', sev: 3, label: { ar: 'أدوية أورام معينة', en: 'Certain cancer drugs' }, names: ['tamoxifen', 'nolvadex', 'capecitabine', 'xeloda', 'fluorouracil', '5-fu', 'تاموكسيفين', 'نولفادكس', 'كابيسيتابين', 'زيلودا'],
+    ar: ['ترفع الـ INR بشكل كبير وخطير.', 'يجب أن يعرف طبيب الأورام وطبيب الوارفارين؛ متابعة INR لصيقة.'], en: ['Raise INR significantly.', 'Both the oncologist and warfarin doctor must know; close INR follow-up.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'ماكرولايدات (مضادات حيوية)', en: 'Macrolide antibiotics' },
+    names: ['clarithromycin', 'klacid', 'erythromycin', 'azithromycin', 'zithromax', 'azimex', 'كلاريثرومايسين', 'كلاسيد', 'اريثرومايسين', 'ارثرومايسين', 'ازيثرومايسين', 'زيثروماكس', 'ازيمكس'],
+    ar: ['قد ترفع الـ INR وتزيد النزيف.', 'أخبر الطبيب، وافحص INR خلال 3–5 أيام من البدء.'], en: ['May raise INR and bleeding.', 'Tell your doctor and check INR within 3–5 days of starting.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'كينولونات (مضادات حيوية)', en: 'Quinolone antibiotics' },
+    names: ['ciprofloxacin', 'ciprobay', 'cipro', 'levofloxacin', 'tavanic', 'moxifloxacin', 'avalox', 'ofloxacin', 'norfloxacin', 'سيبروفلوكساسين', 'سيبرو', 'سيبروباي', 'ليفوفلوكساسين', 'تافانيك', 'موكسيفلوكساسين', 'افالوكس'],
+    ar: ['قد ترفع الـ INR.', 'فحص INR خلال أيام من البدء وراقب علامات النزيف.'], en: ['May raise INR.', 'Check INR within days of starting and watch for bleeding.'] },
+  { t: 'warfarin', sev: 1, label: { ar: 'مضادات حيوية أخرى', en: 'Other antibiotics' },
+    names: ['amoxicillin', 'amoxil', 'augmentin', 'amoxiclav', 'penicillin', 'cephalexin', 'keflex', 'cefuroxime', 'zinnat', 'cefixime', 'suprax', 'doxycycline', 'vibramycin',
+      'اموكسيسيلين', 'اموكسيل', 'اوجمنتين', 'اوغمنتين', 'بنسلين', 'سيفالكسين', 'كيفلكس', 'سيفوروكسيم', 'زينات', 'سيفيكسيم', 'سوبراكس', 'دوكسيسيكلين'],
+    ar: ['أي مضاد حيوي ممكن يرفع الـ INR قليلاً، خاصة مع الحرارة وقلة الأكل.', 'راقب الكدمات والنزيف، وافحص INR إذا طال الكورس.'],
+    en: ['Any antibiotic can raise INR a little, especially with fever and poor appetite.', 'Watch for bruising or bleeding and check INR if the course is long.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'أدوية الصرع المحفزة للكبد', en: 'Enzyme-inducing antiepileptics' },
+    names: ['carbamazepine', 'tegretol', 'phenobarbital', 'phenobarbitone', 'phenytoin', 'epanutin', 'dilantin', 'primidone', 'mysoline', 'كاربامازيبين', 'تجريتول', 'تيجريتول', 'فينوباربيتال', 'فينيتوين', 'ايبانوتين', 'بريميدون'],
+    ar: ['تغيّر مفعول الوارفارين (غالباً تُضعفه).', 'فحص INR عند بدء أو إيقاف أو تغيير جرعة أي منها.'], en: ['Change warfarin effect (usually weaken it).', 'Check INR when starting, stopping or changing the dose.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'مضادات اكتئاب (SSRI/SNRI)', en: 'Antidepressants (SSRI/SNRI)' },
+    names: ['fluoxetine', 'prozac', 'sertraline', 'zoloft', 'lustral', 'paroxetine', 'seroxat', 'paxil', 'citalopram', 'escitalopram', 'cipralex', 'lexapro', 'fluvoxamine', 'faverin', 'venlafaxine', 'efexor', 'duloxetine', 'cymbalta',
+      'فلوكستين', 'فلوكسيتين', 'بروزاك', 'سيرترالين', 'زولوفت', 'باروكستين', 'سيروكسات', 'سيتالوبرام', 'اسيتالوبرام', 'سيبرالكس', 'فلوفوكسامين', 'فينلافاكسين', 'ايفكسور', 'دولوكستين', 'سيمبالتا'],
+    ar: ['تزيد خطر النزيف.', 'راقب الكدمات ونزيف اللثة أو الأنف، وأخبر طبيبك.'], en: ['Increase bleeding risk.', 'Watch for bruising, gum or nose bleeding, and tell your doctor.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'أدوية الكوليسترول', en: 'Cholesterol medicines' },
+    names: ['rosuvastatin', 'crestor', 'simvastatin', 'zocor', 'fluvastatin', 'lescol', 'fenofibrate', 'lipanthyl', 'tricor', 'gemfibrozil', 'lopid', 'روسوفاستاتين', 'كريستور', 'سيمفاستاتين', 'زوكور', 'فينوفايبرات', 'ليبانثيل', 'جيمفيبروزيل', 'لوبيد'],
+    ar: ['قد ترفع الـ INR.', 'فحص INR بعد البدء أو تغيير الجرعة.'], en: ['May raise INR.', 'Check INR after starting or changing the dose.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'ألوبيورينول', en: 'Allopurinol' }, names: ['allopurinol', 'zyloric', 'zyloprim', 'الوبيورينول', 'زايلوريك', 'زيلوريك'],
+    ar: ['قد يرفع الـ INR.', 'فحص INR بعد البدء.'], en: ['May raise INR.', 'Check INR after starting.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'باراسيتامول (بانتظام)', en: 'Paracetamol (regular use)' },
+    names: ['paracetamol', 'acetaminophen', 'panadol', 'adol', 'revanin', 'fevadol', 'tylenol', 'solpadeine', 'باراسيتامول', 'بنادول', 'ادول', 'ريفانين', 'فيفادول', 'سولبادين'],
+    ar: ['الاستعمال المنتظم لأكثر من 2 غرام يومياً لعدة أيام قد يرفع الـ INR.', 'الجرعات العرضية آمنة عادةً. إذا تحتاجه يومياً أخبر طبيبك.'],
+    en: ['Regular use above 2 g a day for several days can raise INR.', 'Occasional doses are usually fine. Tell your doctor if you need it daily.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'ترامادول', en: 'Tramadol' }, names: ['tramadol', 'tramal', 'ultram', 'ترامادول', 'ترامال'],
+    ar: ['قد يرفع الـ INR.', 'راقب علامات النزيف وأخبر طبيبك.'], en: ['May raise INR.', 'Watch for bleeding and tell your doctor.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'أدوية الغدة الدرقية', en: 'Thyroid medicines' },
+    names: ['levothyroxine', 'thyroxine', 'eltroxin', 'euthyrox', 'synthroid', 'carbimazole', 'neomercazole', 'propylthiouracil', 'ليفوثيروكسين', 'ثيروكسين', 'التروكسين', 'يوثيروكس', 'كاربيمازول', 'نيوميركازول'],
+    ar: ['تغيّر نشاط الغدة يغيّر مفعول الوارفارين.', 'فحص INR عند البدء أو تغيير الجرعة.'], en: ['Changes in thyroid activity change warfarin effect.', 'Check INR when starting or changing the dose.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'الكورتيزون', en: 'Corticosteroids' }, names: STEROIDS,
+    ar: ['قد يغيّر الـ INR ويزيد خطر نزيف المعدة.', 'متابعة INR، خاصة مع الجرعات العالية.'], en: ['May change INR and raise stomach-bleeding risk.', 'Monitor INR, especially with high doses.'] },
+  { t: 'warfarin', sev: 1, label: { ar: 'أدوية المعدة', en: 'Stomach acid medicines' }, names: ['omeprazole', 'losec', 'esomeprazole', 'nexium', 'cimetidine', 'اوميبرازول', 'لوسيك', 'اسوميبرازول', 'نكسيوم', 'سيميتيدين'],
+    ar: ['قد ترفع الـ INR قليلاً.', 'متابعة INR الاعتيادية تكفي غالباً.'], en: ['May raise INR slightly.', 'Routine INR checks are usually enough.'] },
+  { t: 'warfarin', sev: 2, label: { ar: 'فيتامين ك', en: 'Vitamin K' }, names: ['vitamin k', 'phytomenadione', 'konakion', 'فيتامين ك', 'فيتامين k', 'كوناكيون'],
+    ar: ['يُضعف مفعول الوارفارين مباشرة.', 'لا تأخذه كمكمل إلا بطلب الطبيب.'], en: ['Directly weakens warfarin.', 'Do not take it as a supplement unless your doctor asks.'] },
+  { t: 'warfarin', sev: 1, label: { ar: 'خضار ورقية غنية بفيتامين ك', en: 'Vitamin K-rich greens' },
+    names: ['spinach', 'kale', 'broccoli', 'parsley', 'molokhia', 'سبانخ', 'ملوخية', 'بقدونس', 'بروكلي', 'جرجير', 'سلق', 'كرنب', 'ملفوف'],
+    ar: ['تغيير كميتها فجأة يغيّر مفعول الوارفارين.', 'لا داعي لمنعها؛ حافظ على كمية ثابتة ومنتظمة كل أسبوع.'],
+    en: ['Sudden changes in how much you eat change warfarin effect.', "No need to avoid them; keep the amount steady week to week."] },
+  { t: 'warfarin', sev: 2, label: { ar: 'أعشاب ومكملات', en: 'Herbs and supplements' },
+    names: ['ginkgo', 'garlic', 'ginseng', 'turmeric', 'curcumin', 'fish oil', 'omega', 'st john', 'hypericum', 'green tea', 'cranberry', 'grapefruit', 'dong quai', 'vitamin e', 'glucosamine',
+      'جنكة', 'جنكو', 'جينكو', 'ثوم', 'جنسنج', 'جينسنغ', 'كركم', 'كركمين', 'زيت السمك', 'اوميغا', 'اوميجا', 'عشبة القديس يوحنا', 'شاي اخضر', 'توت بري', 'جريب فروت', 'كريفون', 'فيتامين ه', 'فيتامين e', 'جلوكوزامين'],
+    ar: ['بعضها يزيد النزيف وبعضها يُضعف الوارفارين.', 'لا تبدأ أي أعشاب أو مكملات بدون سؤال طبيبك أو الصيدلاني.'],
+    en: ['Some increase bleeding, others weaken warfarin.', "Don't start any herbs or supplements without asking your doctor or pharmacist."] },
+  { t: 'warfarin', sev: 2, label: { ar: 'الكحول', en: 'Alcohol' }, names: ['alcohol', 'كحول'],
+    ar: ['يغيّر مفعول الوارفارين ويزيد خطر النزيف.', 'تجنّبه أو قلّله جداً.'], en: ['Changes warfarin effect and raises bleeding risk.', 'Avoid it or keep it minimal.'] },
+
+  // ---------------- Acetazolamide ----------------
+  { t: 'acetazolamide', sev: 3, label: { ar: 'الأسبرين والساليسيلات', en: 'Aspirin and salicylates' }, names: ASPIRIN,
+    ar: ['يتراكم الدواءان في الجسم: خطر تسمم (خمول، تشوش، تسارع تنفس، حموضة الدم)، خاصة مع جرعات الأسبرين المسكّنة وكبار السن.', 'تجنّب الأسبرين كمسكن. الجرعة القلبية المنخفضة فقط بقرار الطبيب.'],
+    en: ['Both build up in the body: risk of toxicity (drowsiness, confusion, fast breathing, acidosis), especially with pain-relief doses and in older people.', 'Avoid aspirin as a painkiller. Low cardiac dose only on doctor advice.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'مثبطات الكربونيك أنهيدراز الأخرى', en: 'Other carbonic anhydrase inhibitors' },
+    names: ['topiramate', 'topamax', 'zonisamide', 'zonegran', 'methazolamide', 'dorzolamide', 'trusopt', 'cosopt', 'brinzolamide', 'azopt', 'simbrinza', 'توبيرامات', 'توباماكس', 'زونيساميد', 'دورزولاميد', 'تروبت', 'كوزوبت', 'برينزولاميد', 'ازوبت'],
+    ar: ['نفس آلية العمل: زيادة خطر حصى الكلى وحموضة الدم. قطرات العين من نفس الفئة غالباً لا داعي لها مع الأقراص.', 'تأكد مع طبيبك أن الجمع مقصود، واشرب ماء كافياً.'],
+    en: ['Same mechanism: higher risk of kidney stones and acidosis. Eye drops of the same class usually add little on top of tablets.', 'Confirm the combination is intended and drink enough water.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'ليثيوم', en: 'Lithium' }, names: ['lithium', 'priadel', 'camcolit', 'ليثيوم', 'بريادل'],
+    ar: ['يزيد طرح الليثيوم فينخفض مستواه ومفعوله.', 'فحص مستوى الليثيوم في الدم عند البدء أو الإيقاف.'], en: ['Increases lithium excretion, lowering its level and effect.', 'Check lithium blood levels when starting or stopping.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'فينيتوين وفينوباربيتال وبريميدون', en: 'Phenytoin, phenobarbital, primidone' },
+    names: ['phenytoin', 'epanutin', 'dilantin', 'fosphenytoin', 'phenobarbital', 'phenobarbitone', 'primidone', 'mysoline', 'فينيتوين', 'ايبانوتين', 'فينوباربيتال', 'بريميدون'],
+    ar: ['خطر لين العظام مع الاستعمال الطويل، وقد يرتفع مستوى الفينيتوين.', 'متابعة مستوى الدواء وفيتامين د وصحة العظام.'], en: ['Risk of bone softening with long use; phenytoin levels may rise.', 'Monitor drug levels, vitamin D and bone health.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'كاربامازيبين', en: 'Carbamazepine' }, names: ['carbamazepine', 'tegretol', 'كاربامازيبين', 'تجريتول', 'تيجريتول'],
+    ar: ['قد يرفع مستوى الكاربامازيبين (دوخة، ازدواج رؤية).', 'فحص مستوى الدواء عند البدء.'], en: ['May raise carbamazepine levels (dizziness, double vision).', 'Check the drug level when starting.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'سيكلوسبورين', en: 'Cyclosporine' }, names: ['cyclosporine', 'ciclosporin', 'neoral', 'sandimmun', 'سيكلوسبورين', 'نيورال', 'سانديميون'],
+    ar: ['قد يرفع مستوى السيكلوسبورين ويؤثر على الكلى.', 'متابعة المستوى ووظائف الكلى.'], en: ['May raise cyclosporine levels and affect the kidneys.', 'Monitor levels and kidney function.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'مدرات البول', en: 'Diuretics' },
+    names: ['furosemide', 'lasix', 'hydrochlorothiazide', 'hctz', 'esidrex', 'indapamide', 'natrilix', 'bumetanide', 'torsemide', 'chlorthalidone', 'فوروسيمايد', 'فيوروسيمايد', 'لازكس', 'هيدروكلوروثيازيد', 'انداباميد', 'ناتريليكس', 'بوميتانيد'],
+    ar: ['نقص البوتاسيوم (تعب، تشنجات، اضطراب نبض).', 'فحص البوتاسيوم دورياً.'], en: ['Low potassium (fatigue, cramps, irregular heartbeat).', 'Check potassium regularly.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'الكورتيزون', en: 'Corticosteroids' }, names: STEROIDS,
+    ar: ['نقص البوتاسيوم.', 'فحص البوتاسيوم، خاصة مع الاستعمال الطويل.'], en: ['Low potassium.', 'Check potassium, especially with long use.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'ديجوكسين', en: 'Digoxin' }, names: ['digoxin', 'lanoxin', 'ديجوكسين', 'لانوكسين'],
+    ar: ['نقص البوتاسيوم يزيد سمية الديجوكسين (غثيان، اضطراب رؤية، اضطراب نبض).', 'فحص البوتاسيوم ومستوى الديجوكسين.'], en: ['Low potassium increases digoxin toxicity (nausea, vision changes, arrhythmia).', 'Check potassium and digoxin levels.'] },
+  { t: 'acetazolamide', sev: 2, label: { ar: 'ميتفورمين', en: 'Metformin' },
+    names: ['metformin', 'glucophage', 'janumet', 'galvusmet', 'glucovance', 'kombiglyze', 'xigduo', 'ميتفورمين', 'جلوكوفاج', 'جلوكوفاچ', 'جانوميت', 'جالفوس ميت', 'جلوكوفانس'],
+    ar: ['زيادة خطر حموضة الدم.', 'متابعة وظائف الكلى؛ راجع الطبيب إذا ظهر تعب شديد أو ضيق نفس أو ألم بطن.'], en: ['Higher risk of metabolic acidosis.', 'Monitor kidney function; see a doctor for severe fatigue, breathlessness or abdominal pain.'] },
+  { t: 'acetazolamide', sev: 1, label: { ar: 'أدوية يقل طرحها مع البول القلوي', en: 'Drugs retained in alkaline urine' },
+    names: ['memantine', 'ebixa', 'quinidine', 'amphetamine', 'mexiletine', 'ميمانتين', 'ايبيكسا', 'كينيدين', 'امفيتامين'],
+    ar: ['الأسيتازولاميد يجعل البول قلوياً فيقل طرح هذه الأدوية وترتفع مستوياتها.', 'انتبه للأعراض الجانبية وأخبر طبيبك.'], en: ['Acetazolamide makes urine alkaline, so these are cleared less and levels rise.', 'Watch for side effects and tell your doctor.'] },
+  { t: 'acetazolamide', sev: 1, label: { ar: 'بيكربونات الصوديوم', en: 'Sodium bicarbonate' }, names: ['sodium bicarbonate', 'bicarbonate', 'eno', 'بيكربونات', 'اينو'],
+    ar: ['قد يزيد خطر حصى الكلى.', 'لا تستخدمه بانتظام بدون استشارة.'], en: ['May increase the risk of kidney stones.', "Don't use it regularly without advice."] },
+  { t: 'acetazolamide', sev: 1, label: { ar: 'ميثينامين', en: 'Methenamine' }, names: ['methenamine', 'hiprex', 'ميثينامين'],
+    ar: ['يقل مفعول الميثينامين لأنه يحتاج بولاً حمضياً.', 'اسأل طبيبك عن بديل.'], en: ['Methenamine works less because it needs acidic urine.', 'Ask your doctor about an alternative.'] }
+];
+
+/* ---------- matching ---------- */
+function normName(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[ً-ْـ]/g, '')           // Arabic diacritics + tatweel
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/چ/g, 'ج').replace(/گ/g, 'ك')
+    .replace(/[\s\-_.,/()]+/g, '');
+}
+const IX_N = IX.map(e => ({ ...e, nn: e.names.map(normName) }));
+const TGT_N = Object.fromEntries(Object.entries(TARGETS).map(([k, v]) => [k, v.names.map(normName)]));
+function nameHit(q, n) { return q.length >= 3 && (n.startsWith(q) || (n.length >= 4 && q.includes(n)) || (q.length >= 4 && n.includes(q))); }
+/** Which target drug (warfarin / acetazolamide) a medicine name refers to, if any. */
+function targetOf(name) {
+  const q = normName(name);
+  return Object.keys(TGT_N).find(k => TGT_N[k].some(n => nameHit(q, n))) || null;
+}
+/** Interactions of a medicine name with the target drugs. */
+function interactionsFor(name, onlyTargets) {
+  const q = normName(name);
+  if (q.length < 3) return [];
+  return IX_N.filter(e => (!onlyTargets || onlyTargets.includes(e.t)) && e.nn.some(n => nameHit(q, n))).sort((a, b) => b.sev - a.sev);
+}
+function suggestNames(query) {
+  const q = normName(query); if (q.length < 2) return [];
+  const out = [], seen = new Set();
+  const all = [...IX.flatMap(e => e.names), ...Object.values(TARGETS).flatMap(v => v.names)];
+  for (const n of all) { const k = normName(n); if (k.startsWith(q) && !seen.has(k)) { seen.add(k); out.push(n); } if (out.length >= 8) break; }
+  return out;
+}
+/** Targets present among a profile's current medicines. */
+function profileTargets(pid) {
+  const td = today();
+  return [...new Set(S.meds.filter(m => m.profileId === pid && (!m.end || m.end >= td)).map(m => targetOf(m.name)).filter(Boolean))];
+}
+const SEV = { 3: 'bad', 2: 'warn', 1: 'brand' };
+function sevLabel(n) { return t('sev')[n]; }
+function ixCard(e) {
+  const txt = e[S.lang];
+  return `<div class="ix ${SEV[e.sev]}"><div class="row" style="align-items:flex-start;gap:10px">
+    <span class="tag ${SEV[e.sev]}" style="flex:none">${sevLabel(e.sev)}</span>
+    <div class="grow"><div style="font-weight:800">${t('with')} ${TARGETS[e.t][S.lang]} · <span style="font-weight:600">${esc(e.label[S.lang])}</span></div>
+    <div style="margin-top:4px">${txt[0]}</div><div class="muted" style="margin-top:4px">👉 ${txt[1]}</div></div></div></div>`;
+}
+
+/* ---------- checker sheet ---------- */
+function openInteractions(prefill) {
+  openModal(`<div class="grab"></div>
+    <div class="row" style="margin-bottom:6px"><div class="micon" style="background:var(--brand-soft);color:var(--brand)">${I.shield}</div>
+      <div class="grow"><h3 style="margin:0">${t('ixTitle')}</h3><div class="muted" style="font-size:13px">${t('ixWith')}</div></div></div>
+    <div class="field" style="margin-top:14px;position:relative">
+      <input id="ixQ" placeholder="${t('ixPh')}" autocomplete="off" value="${esc(prefill || '')}">
+      <div id="ixSug" class="opts" style="margin-top:8px"></div>
+    </div>
+    <div id="ixRes"></div>
+    <button class="btn soft" style="margin-top:14px" onclick="checkMyMeds()">${I.pill.replace('<svg', '<svg width="20" height="20"')} ${t('ixMine')}</button>
+    <p class="muted" style="font-size:12px;margin-top:14px;line-height:1.6">⚠️ ${t('ixDisclaimer')}</p>`);
+  const q = document.getElementById('ixQ');
+  const run = () => {
+    const v = q.value.trim();
+    const sug = suggestNames(v).filter(n => normName(n) !== normName(v));
+    document.getElementById('ixSug').innerHTML = sug.map(n => `<button type="button" class="opt" onclick="document.getElementById('ixQ').value=this.textContent;document.getElementById('ixQ').dispatchEvent(new Event('input'))">${esc(n)}</button>`).join('');
+    document.getElementById('ixRes').innerHTML = ixResultHtml(v);
+  };
+  q.addEventListener('input', run);
+  run();
+  if (!prefill) setTimeout(() => q.focus(), 250);
+}
+function ixResultHtml(v) {
+  if (normName(v).length < 3) return '';
+  const tg = targetOf(v);
+  if (tg) return `<div class="ix brand">${t('ixIsTarget')(TARGETS[tg][S.lang])}</div>`;
+  const hits = interactionsFor(v);
+  if (!hits.length) return `<div class="ix ok"><b>${t('ixNone')(esc(v))}</b><div class="muted" style="margin-top:4px">${t('ixNoneHint')}</div></div>`;
+  return `<div class="stack" style="gap:10px">${hits.map(ixCard).join('')}</div>`;
+}
+function checkMyMeds() {
+  const td = today();
+  const meds = S.meds.filter(m => m.profileId === S.active && (!m.end || m.end >= td));
+  const mine = profileTargets(S.active);
+  const targets = Object.keys(TARGETS);
+  const rows = meds.filter(m => !targetOf(m.name)).map(m => ({ m, hits: interactionsFor(m.name, targets) })).filter(r => r.hits.length);
+  const res = document.getElementById('ixRes');
+  document.getElementById('ixQ').value = '';
+  document.getElementById('ixSug').innerHTML = '';
+  if (!rows.length) { res.innerHTML = `<div class="ix ok"><b>${t('ixMineNone')}</b><div class="muted" style="margin-top:4px">${t('ixNoneHint')}</div></div>`; return; }
+  res.innerHTML = `<div class="stack" style="gap:14px">${rows.map(r => `<div><div class="row" style="margin-bottom:8px">${micon(r.m, 34)}<b>${esc(r.m.name)}</b></div>
+    <div class="stack" style="gap:8px">${r.hits.map(e => ixCard(e) + (mine.includes(e.t) ? '' : `<div class="hint" style="margin:-4px 4px 0">${t('ixNotTaking')(TARGETS[e.t][S.lang])}</div>`)).join('')}</div></div>`).join('')}</div>`;
+}
+/** Warning shown in the medicine form while typing a name. */
+function formIxWarning(name) {
+  const mine = profileTargets(S.active);
+  if (!mine.length) return '';
+  const hits = interactionsFor(name, mine);
+  if (!hits.length) return '';
+  const e = hits[0];
+  return `<div class="ix ${SEV[e.sev]}" style="margin-top:8px"><b>⚠️ ${t('ixFormWarn')(TARGETS[e.t][S.lang], sevLabel(e.sev))}</b>
+    <div style="margin-top:4px">${e[S.lang][0]}</div><div class="muted" style="margin-top:4px">👉 ${e[S.lang][1]}</div></div>`;
+}
+/** Interaction flags between medicines on the same profile (for the medicines list). */
+function medIxFlag(m) {
+  if (targetOf(m.name)) return null;
+  const mine = profileTargets(m.profileId);
+  if (!mine.length) return null;
+  const hits = interactionsFor(m.name, mine);
+  return hits.length ? hits[0] : null;
 }
 
 /* =====================================================================
