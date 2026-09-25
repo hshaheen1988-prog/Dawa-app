@@ -1,0 +1,17 @@
+# build output
+build/
+android/
+*.apk
+*.idsig
+
+# signing material — lives only in GitHub Secrets
+*.jks
+*.keystore
+DAWA_KEY*.txt
+.pass
+
+# test output
+tests/shots/
+tests/bk.json
+tests/report_test.pdf
+__pycache__/

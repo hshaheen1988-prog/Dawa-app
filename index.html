@@ -412,6 +412,7 @@ nav.tabs button.tab.on { color: var(--brand); }
       <button class="btn" type="submit" data-t="start"></button>
     </form>
     <button class="btn ghost small" style="margin:14px auto 0" type="button" onclick="toggleLang()" data-t="otherLang"></button>
+    <button class="btn ghost small" style="margin:8px auto 0" type="button" onclick="openImport()" data-t="obRestore"></button>
   </div>
 </section>
 
@@ -552,7 +553,7 @@ const T = {
     notif: 'التنبيهات', notifOn: 'مفعّلة', notifOff: 'غير مفعّلة', enable: 'تفعيل', testNotif: 'تجربة', openSettings: 'فتح الإعدادات',
     notifNative: 'ترن حتى لو كان التطبيق مغلقاً', notifBlockedNative: 'مقفلة لهذا التطبيق', notifNote: 'تصل أثناء فتح التطبيق', notifDenied: 'مرفوضة من المتصفح',
     enableNotifMsg: 'فعّل التنبيهات لتصلك التذكيرات', backup: 'نسخة احتياطية', exportData: 'تصدير', importData: 'استيراد',
-    backupHint: 'البيانات محفوظة على هذا الجهاز فقط', imported: 'تم الاستيراد بنجاح', importFail: 'الملف غير صالح', saved: 'تم الحفظ',
+    backupHint: 'البيانات محفوظة على هذا الجهاز فقط', imported: 'تم الاستيراد بنجاح', importFail: 'الملف غير صالح', privacy: 'سياسة الخصوصية', obRestore: '📂 عندك نسخة احتياطية؟ استرجعها', backupWhy: 'نسخة من كل بياناتك (الأدوية، السجل، INR) — بتلزمك إذا غيّرت تلفونك أو أعدت تثبيت التطبيق', backupSave: 'حفظ ملف في التنزيلات', backupShare: 'مشاركة (Drive / واتساب / إيميل)', backupSaved: n => `انحفظت ✓ التنزيلات ← Dawa ← ${n}`, importHow: 'اختر ملف النسخة الاحتياطية، أو الصق نصّها', importPick: 'اختيار ملف', importPaste: 'أو الصق نص النسخة هنا', importConfirm: 'رح تنستبدل بياناتك الحالية بالنسخة الاحتياطية. متأكد؟', saved: 'تم الحفظ',
     resetAll: 'مسح كل البيانات', confirmReset: 'سيُحذف كل شيء نهائياً. هل أنت متأكد؟', version: 'الإصدار',
     reminderTitle: n => `💊 حان موعد دواء ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'أخذته ✓',
     days: ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'], daysShort: ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
@@ -564,7 +565,7 @@ const T = {
     famPrivacy: 'بس الأدوية اللي بتختارها بتنشارك، ومش أي حدا بيقدر يشوفها: لازم يكون معه الكود. بتقدر تشيل أي متابع بأي وقت.', famRemoveQ: 'إزالة هذا المتابع؟',
     famSharingOn: 'تم تفعيل المشاركة ✓', famSharingOff: 'تم إيقاف المشاركة', famInvite: (n, c) => `${n} بدعوك تتابع أدويته على تطبيق دوائي.\nادخل على العائلة ← تابع شخصاً، واكتب الكود: ${c}`,
     famFollowTitle: 'تابع شخصاً من العائلة', famFollowSub: 'اكتب الكود اللي وصلك منه', famFollowBtn: 'متابعة', famFollowHint: 'بعد المتابعة بتشوف أدويته وجرعاته اليوم، وبتختار لكل دواء: تذكير بموعده، أو تنبيه إذا ما انأخذ.',
-    famBadCode: 'الكود غير صحيح — تأكد من الحروف الستة', famOwnCode: 'هذا كودك أنت 🙂', famNoAccess: 'ما عندك صلاحية — ممكن تكون المشاركة توقفت', famOffline: 'بدها إنترنت — تأكد من الاتصال وجرّب مرة ثانية',
+    famBadCode: 'الكود غير صحيح — تأكد من الحروف الستة', famOwnCode: 'هذا كودك أنت 🙂', famNoAccess: 'ما عندك صلاحية — ممكن تكون المشاركة توقفت', famFull: 'هذا الشخص وصل للحد الأقصى (10 متابعين)', famBusy: 'السيرفر مشغول — جرّب بعد دقيقة', famOffline: 'بدها إنترنت — تأكد من الاتصال وجرّب مرة ثانية',
     famError: 'صار خطأ', famAlready: 'أنت بتتابع هذا الشخص', famJoined: n => `صرت تتابع ${n} ✓`, famLeave: 'إلغاء المتابعة', famLeaveQ: n => `إلغاء متابعة ${n}؟`,
     famRemoved: 'توقفت هذه المتابعة (أوقف المشاركة أو أزالك)', famNotTaken: 'لم تُؤخذ', famGive: 'أعطيته ✓', famGiven: 'تم التسجيل ووصل لموبايله ✓',
     famAlerts: 'التنبيهات لكل دواء', famRemind: 'ذكّرني بموعده', famMissed: 'نبّهني إذا ما انأخذ', famMissAfter: 'متى أعتبر الجرعة فائتة؟', famMin: n => `بعد ${n} دقيقة`,
@@ -579,6 +580,9 @@ const T = {
     inrPastHint: 'لتسجيل نتائج قديمة غيّر التاريخ', inrSaveMore: 'حفظ وإضافة نتيجة ثانية', inrSavedMore: (v, d) => `تم حفظ ${v} (${d}) — أدخل النتيجة التالية`,
     dayPending: 'قادمة', dayNone: 'لا جرعات مطلوبة في هذا اليوم', daySummary: (n, m) => `${n} ${n === 1 ? 'جرعة' : n === 2 ? 'جرعتين' : n <= 10 ? 'جرعات' : 'جرعة'} · ${m === 1 ? 'دواء واحد' : m === 2 ? 'دواءين' : `${m} أدوية`}`,
     dayOpen: 'تسجيل جرعات هذا اليوم', calendarBtn: 'التقويم', monthHint: 'اضغط على أي يوم لتشوف جرعاته · الرقم الصغير = عدد الجرعات',
+    inrPrevRem: 'تذكير قبلها بيوم', inrPrevRemHint: 'إشعار بالمسا قبل يوم الفحص', inrDayRem: 'التذكير يوم الفحص', inrDayRemHint: 'الساعة اللي بيوصلك فيها التذكير',
+    inrPrevTitle: '🩸 بكرة فحص INR', inrPrevBody: (n, d, tm) => `تذكير: فحص INR لـ ${n} بكرة (${d}). رح نذكّرك كمان الساعة ${tm}.`,
+    wInrTomorrow: 'فحص INR بكرة', wMore: n => `+ ${n} جرعات أخرى`, wTomorrow: 'بكرة',
     inrTitle: 'متابعة INR', inrSub: 'نتائج فحص التخثر للوارفارين', inrNoTests: 'لم تُسجّل نتائج بعد', inrRange: (l, h) => `النطاق المطلوب ${l}–${h}`,
     inrTarget: 'المطلوب', inrSt: { ok: 'ضمن النطاق', low: 'أقل من المطلوب', high: 'أعلى من المطلوب', crit: 'مرتفع جداً' },
     inrAdvice: { ok: 'ممتاز. استمر على نفس الجرعة إلا إذا قال طبيبك غير ذلك.',
@@ -661,7 +665,7 @@ const T = {
     notif: 'Notifications', notifOn: 'On', notifOff: 'Off', enable: 'Enable', testNotif: 'Test', openSettings: 'Open settings',
     notifNative: 'Ring even when the app is closed', notifBlockedNative: 'Blocked for this app', notifNote: 'Arrive while the app is open', notifDenied: 'Blocked by the browser',
     enableNotifMsg: 'Turn on notifications to get reminders', backup: 'Backup', exportData: 'Export', importData: 'Import',
-    backupHint: 'Data is stored on this device only', imported: 'Imported successfully', importFail: 'Invalid file', saved: 'Saved',
+    backupHint: 'Data is stored on this device only', imported: 'Imported successfully', importFail: 'Invalid file', privacy: 'Privacy policy', obRestore: '📂 Have a backup? Restore it', backupWhy: 'A copy of all your data (medicines, history, INR) — useful when you change phones or reinstall the app', backupSave: 'Save file to Downloads', backupShare: 'Share (Drive / WhatsApp / email)', backupSaved: n => `Saved ✓ Downloads › Dawa › ${n}`, importHow: 'Pick the backup file, or paste its text', importPick: 'Pick file', importPaste: 'Or paste the backup text here', importConfirm: 'Your current data will be replaced by the backup. Continue?', saved: 'Saved',
     resetAll: 'Erase all data', confirmReset: 'Everything will be deleted permanently. Are you sure?', version: 'Version',
     reminderTitle: n => `💊 Medicine time for ${n}`, reminderBody: (m, a) => `${m} — ${a}`, takenAction: 'Taken ✓',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], daysShort: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -673,7 +677,7 @@ const T = {
     famPrivacy: 'Only the medicines you choose are shared, and only people with the code can see them. You can remove a follower any time.', famRemoveQ: 'Remove this follower?',
     famSharingOn: 'Sharing is on ✓', famSharingOff: 'Sharing stopped', famInvite: (n, c) => `${n} invites you to follow their medicines on Dawa.\nOpen Family → Follow someone, and enter the code: ${c}`,
     famFollowTitle: 'Follow a family member', famFollowSub: 'Enter the code they sent you', famFollowBtn: 'Follow', famFollowHint: "You'll see their medicines and today's doses, and choose per medicine: a reminder at dose time, or an alert if it isn't taken.",
-    famBadCode: 'Wrong code — check the 6 characters', famOwnCode: "That's your own code 🙂", famNoAccess: 'No access — sharing may have stopped', famOffline: 'Needs internet — check your connection and try again',
+    famBadCode: 'Wrong code — check the 6 characters', famOwnCode: "That's your own code 🙂", famNoAccess: 'No access — sharing may have stopped', famFull: 'This person already has the maximum of 10 followers', famBusy: 'Server is busy — try again in a minute', famOffline: 'Needs internet — check your connection and try again',
     famError: 'Something went wrong', famAlready: 'You already follow this person', famJoined: n => `You now follow ${n} ✓`, famLeave: 'Unfollow', famLeaveQ: n => `Unfollow ${n}?`,
     famRemoved: 'This follow ended (sharing stopped or you were removed)', famNotTaken: 'Not taken', famGive: 'Given ✓', famGiven: 'Logged and sent to their phone ✓',
     famAlerts: 'Alerts per medicine', famRemind: 'Remind me', famMissed: 'Alert if missed', famMissAfter: 'Count a dose as missed after', famMin: n => `${n} min`,
@@ -688,6 +692,9 @@ const T = {
     inrPastHint: 'To log older results, change the date', inrSaveMore: 'Save & add another', inrSavedMore: (v, d) => `Saved ${v} (${d}) — enter the next result`,
     dayPending: 'Upcoming', dayNone: 'No doses needed on this day', daySummary: (n, m) => `${n} dose${n === 1 ? '' : 's'} · ${m} medicine${m === 1 ? '' : 's'}`,
     dayOpen: "Log this day's doses", calendarBtn: 'Calendar', monthHint: 'Tap any day to see its doses · small number = doses that day',
+    inrPrevRem: 'Reminder the day before', inrPrevRemHint: 'An evening notice before the test day', inrDayRem: 'Reminder on test day', inrDayRemHint: 'When the reminder arrives',
+    inrPrevTitle: '🩸 INR test tomorrow', inrPrevBody: (n, d, tm) => `Reminder: INR test for ${n} tomorrow (${d}). We'll remind you again at ${tm}.`,
+    wInrTomorrow: 'INR test tomorrow', wMore: n => `+ ${n} more doses`, wTomorrow: 'Tomorrow',
     inrTitle: 'INR tracking', inrSub: 'Warfarin blood-test results', inrNoTests: 'No results yet', inrRange: (l, h) => `Target range ${l}–${h}`,
     inrTarget: 'Target', inrSt: { ok: 'In range', low: 'Below range', high: 'Above range', crit: 'Very high' },
     inrAdvice: { ok: "Great. Keep the same dose unless your doctor says otherwise.",
@@ -731,7 +738,7 @@ const T = {
     doseLogged: 'Dose logged', skippedMsg: 'Dose skipped', snoozedMsg: t => `We'll remind you at ${t}`, list: ', '
   }
 };
-const VERSION = '2.0';
+const VERSION = '2.1';
 
 /* =====================================================================
    State
@@ -1615,6 +1622,8 @@ function medIxFlag(m) {
 /* =====================================================================
    INR tracking (warfarin)
    ===================================================================== */
+const inrRem = r => Object.assign({ prev: true, prevTime: '20:00', dayTime: '09:00' }, r.rem || {});
+function setInrRem(k, v) { const r = inrOf(S.active); r.rem = { ...inrRem(r), [k]: v }; save(); openInr(); }
 function inrOf(pid) {
   if (!S.inr[pid]) S.inr[pid] = { low: 2, high: 3, tests: [], next: null };
   return S.inr[pid];
@@ -1696,6 +1705,11 @@ function openInr() {
     <div class="card" style="box-shadow:none;border:1.5px solid var(--line);margin-top:14px;padding:4px 14px">
       <div class="set-row"><span class="ico">${I.clock}</span><div class="body">${t('inrNext')}<small>${r.next ? fmtDate(r.next, { weekday: 'long', day: 'numeric', month: 'long' }) : t('inrNoNext')}</small></div>
         <input type="date" id="inrNextIn" value="${r.next || ''}" style="width:150px" onchange="setInrNext(this.value)"></div>
+      <div class="set-row"><span class="ico">${I.bell}</span><div class="body">${t('inrPrevRem')}<small>${t('inrPrevRemHint')}</small></div>
+        ${inrRem(r).prev ? `<input type="time" value="${inrRem(r).prevTime}" style="width:118px" onchange="if(this.value)setInrRem('prevTime',this.value)">` : ''}
+        <button class="tgl ${inrRem(r).prev ? 'on' : ''}" onclick="setInrRem('prev', ${!inrRem(r).prev})"></button></div>
+      <div class="set-row"><span class="ico">${I.clock}</span><div class="body">${t('inrDayRem')}<small>${t('inrDayRemHint')}</small></div>
+        <input type="time" value="${inrRem(r).dayTime}" style="width:118px" onchange="if(this.value)setInrRem('dayTime',this.value)"></div>
       <div class="set-row"><span class="ico">${I.shield}</span><div class="body">${t('inrTargetRange')}<small>${t('inrTargetHint')}</small></div>
         <div class="row" style="gap:4px"><input type="number" step="0.1" min="1" max="4" value="${r.low}" style="width:64px" onchange="setInrRange('low',this.value)" inputmode="decimal">
         <span>–</span><input type="number" step="0.1" min="1.5" max="5" value="${r.high}" style="width:64px" onchange="setInrRange('high',this.value)" inputmode="decimal"></div></div>
@@ -1933,7 +1947,21 @@ function widgetData() {
   }
   const items = [...groups.values()].sort((a, b) => a.at - b.at).slice(0, 30)
     .map(g => ({ date: g.date, at: g.at, time: g.time, person: S.profiles.length > 1 ? g.person : '', text: g.parts.join('\n'), keys: g.keys.join(',') }));
-  return { days, items, labels: { title: t('appName'), taken: t('takenAction'), allDone: t('wAllDone'), none: t('noneToday'), open: t('wOpen'), next: t('wNext'), late: t('late') } };
+  const notes = [];
+  for (const p of S.profiles) {
+    const nx = S.inr[p.id]?.next;
+    if (nx === td || nx === tm) notes.push(`🩸 ${nx === td ? t('inrToday') : t('wInrTomorrow')}${S.profiles.length > 1 ? ' · ' + p.name : ''}`);
+  }
+  for (const f of (S.family?.following || [])) {
+    if (f.removed || !f.snapshot) continue;
+    const sl = f.snapshot.slots.filter(x => x.d === td);
+    if (!sl.length) continue;
+    const st = sl.map(x => famSlotState(f, x, td));
+    const late = st.filter(x => x === 'late').length;
+    notes.push(`👁 ${f.name}: ${st.filter(x => x === 'taken').length}/${sl.length}${late ? ` · ⚠ ${late}` : ''}`);
+  }
+  return { days, items, note: notes.join('   '), labels: { title: `${t('appName')} · ${t('today')}`, taken: t('takenAction'), check: '✓', allDone: t('wAllDone'), none: t('noneToday'), open: t('wOpen'),
+    next: t('wNext'), late: t('late'), more: t('wMore')('{n}'), tomorrow: t('wTomorrow') } };
 }
 
 /* =====================================================================
@@ -2055,6 +2083,8 @@ function famError(e) {
   if (/invalid code/.test(m)) return t('famBadCode');
   if (/own code/.test(m)) return t('famOwnCode');
   if (/no access/.test(m)) return t('famNoAccess');
+  if (/too many followers/.test(m)) return t('famFull');
+  if (/busy/.test(m)) return t('famBusy');
   if (/Failed to fetch|NetworkError|Load failed|network/i.test(m)) return t('famOffline');
   return t('famError') + ' (' + m.slice(0, 60) + ')';
 }
@@ -2101,11 +2131,17 @@ function famSchedulePush(delay = 2500) {
   clearTimeout(famPushTimer);
   famPushTimer = setTimeout(() => famPush().catch(() => {}), delay);
 }
+function famHash(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = (h * 33 + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36) + ':' + str.length; }
+function persistQuiet() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 async function famPush() {
   const F = FAM(); if (!F.code) return;
-  const snap = famSnapshot();
-  await rpc('fam_push', { ...(await famCreds()), p_snapshot: snap, p_marks: famMarksOut(snap) });
-  F.pushedAt = new Date().toISOString();
+  const snap = famSnapshot(), marks = famMarksOut(snap);
+  const { at, ...stable } = snap;
+  const h = famHash(JSON.stringify([stable, marks]));
+  if (h === F.pushHash && F.pushedAt && Date.now() - new Date(F.pushedAt) < 6 * 3600e3) return;   // nothing new to send
+  await rpc('fam_push', { ...(await famCreds()), p_snapshot: snap, p_marks: marks });
+  F.pushedAt = new Date().toISOString(); F.pushHash = h;
+  persistQuiet();
 }
 /** Marks made by followers ("mum gave dad the pill") flow back into this phone. */
 async function famPullOwn() {
@@ -2201,7 +2237,7 @@ async function famJoin(code) {
 }
 async function famPullFollow(f) {
   try {
-    const res = await rpc('fam_pull', { ...(await famCreds()), p_code: f.code, p_since: f.since });
+    const res = await rpc('fam_pull', { ...(await famCreds()), p_code: f.code, p_since: f.snapshot ? f.since : null });
     f.name = res.patient_name || f.name;
     if (res.snapshot && res.snapshot.slots) f.snapshot = res.snapshot;
     for (const mk of res.marks || []) {
@@ -2318,7 +2354,14 @@ async function famSync(force) {
     for (const f of F.following) await famPullFollow(f);
     save();
     if (tab === 'family' && document.getElementById('modal').classList.contains('hidden')) renderFamily();
-  } catch (e) { /* offline: try again later */ }
+  } catch (e) {
+    if (/invalid device/.test(String(e && e.message))) {   // device was cleaned up on the server after months of no use
+      F.id = null; F.secret = null; F.code = null; F.pushHash = null;
+      for (const f of F.following) f.removed = true;
+      save();
+    }
+    /* offline: try again later */
+  }
   finally { famSyncing = false; }
 }
 
@@ -2667,11 +2710,10 @@ function openSettings() {
       <div class="set-row"><span class="ico">${I.palette}</span><div class="body">${t('theme')}</div>
         <div class="range" style="width:190px">${['auto', 'light', 'dark'].map(th => `<button class="${S.theme === th ? 'on' : ''}" onclick="setTheme('${th}')">${t('themes')[th]}</button>`).join('')}</div></div>
       <div class="set-row"><span class="ico">${I.save}</span><div class="body">${t('backup')}<small>${t('backupHint')}</small></div>
-        <div class="row"><button class="btn ghost small" onclick="exportData()">${t('exportData')}</button><button class="btn ghost small" onclick="document.getElementById('importFile').click()">${t('importData')}</button></div></div>
+        <div class="row"><button class="btn ghost small" onclick="exportData()">${t('exportData')}</button><button class="btn ghost small" onclick="openImport()">${t('importData')}</button></div></div>
     </div>
-    <input type="file" id="importFile" accept="application/json,.json,text/plain" class="hidden" onchange="importData(this.files[0])">
     <button class="btn danger" style="margin-top:14px" onclick="resetAll()">${I.trash.replace('<svg', '<svg width="18" height="18"')} ${t('resetAll')}</button>
-    <p class="muted" style="text-align:center;font-size:12px;margin-top:14px">${t('appName')} · ${t('version')} ${VERSION}</p>`);
+    <p class="muted" style="text-align:center;font-size:12px;margin-top:14px">${t('appName')} · ${t('version')} ${VERSION} · <a href="https://github.com/hshaheen1988-prog/Dawa-app/blob/main/PRIVACY.md" style="color:inherit">${t('privacy')}</a></p>`);
 }
 function setTheme(th) { S.theme = th; save(); applyShell(); openSettings(); }
 function saveUser() {
@@ -2681,24 +2723,48 @@ function saveUser() {
   save(); toast(t('saved')); render();
 }
 function toggleLang() { S.lang = S.lang === 'ar' ? 'en' : 'ar'; save(); render(); }
+const backupName = () => `dawa-backup-${today()}.json`;
 function exportData() {
-  const json = JSON.stringify(S), name = `dawa-backup-${today()}.json`;
-  if (NATIVE) { DawaNative.share(name, json); return; }
+  const json = JSON.stringify(S), name = backupName();
+  if (NATIVE) {
+    openModal(`<h3 style="margin:0 0 6px">${t('backup')}</h3><p class="muted" style="font-size:13px;margin:0 0 14px">${t('backupWhy')}</p>
+      ${typeof DawaNative.saveFile === 'function' ? `<button class="btn" style="width:100%" onclick="backupSave()">📥 ${t('backupSave')}</button>` : ''}
+      <button class="btn ghost" style="width:100%;margin-top:10px" onclick="backupShare()">📤 ${t('backupShare')}</button>`);
+    return;
+  }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); a.download = name; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
+function backupSave() {
+  let ok = false;
+  try { ok = DawaNative.saveFile(backupName(), JSON.stringify(S)); } catch (e) { ok = false; }
+  if (ok) { closeModal(); toast(t('backupSaved')(backupName())); } else backupShare();
+}
+function backupShare() { DawaNative.share(backupName(), JSON.stringify(S)); }
+function openImport() {
+  openModal(`<h3 style="margin:0 0 6px">${t('importData')}</h3><p class="muted" style="font-size:13px;margin:0 0 14px">${t('importHow')}</p>
+    <input type="file" id="importFile" accept="application/json,.json,text/plain" class="hidden" onchange="importData(this.files[0])">
+    <button class="btn" style="width:100%" onclick="document.getElementById('importFile').click()">📂 ${t('importPick')}</button>
+    <div class="field" style="margin-top:14px"><label class="lbl">${t('importPaste')}</label>
+      <textarea id="importText" rows="4" dir="ltr" style="width:100%;font-family:monospace;font-size:12px"></textarea></div>
+    <button class="btn ghost" style="width:100%" onclick="importText(document.getElementById('importText').value)">${t('importData')}</button>`);
+}
 function importData(file) {
   if (!file) return;
   const r = new FileReader();
-  r.onload = () => {
-    try {
-      const d = JSON.parse(r.result);
-      if (!d.user || !Array.isArray(d.profiles) || !Array.isArray(d.meds)) throw 0;
-      S = migrate(d); save(); closeModal(); toast(t('imported')); render();
-    } catch (e) { toast(t('importFail')); }
-  };
+  r.onload = () => importText(String(r.result || ''));
   r.readAsText(file);
+}
+async function importText(txt) {
+  let d;
+  try {
+    const a = txt.indexOf('{'), b = txt.lastIndexOf('}');
+    d = JSON.parse(txt.slice(a, b + 1));
+    if (a < 0 || !d.user || !Array.isArray(d.profiles) || !Array.isArray(d.meds)) throw 0;
+  } catch (e) { toast(t('importFail')); return; }
+  if (S.user && S.meds.length && !(await ask(t('importConfirm'), t('importData')))) return;
+  S = migrate(d); save(); closeModal(); toast(t('imported')); render();
 }
 async function resetAll() {
   if (!await ask(t('confirmReset'), t('del'))) return;
@@ -2851,8 +2917,13 @@ function buildAlarms() {
   for (const p of S.profiles) {
     const r = S.inr[p.id];
     if (!r?.next) continue;
-    const at = new Date(`${r.next}T09:00:00`).getTime();
-    if (at > now) out.push({ id: hashKey('inr|' + p.id + '|' + r.next), at, keys: '', title: t('inrRemTitle'), body: t('inrRemBody')(p.name), person: p.name, timeLabel: fmtTime('09:00'), lblHeader: t('inrRemTitle') });
+    const rm = inrRem(r);
+    const at = new Date(`${r.next}T${rm.dayTime}:00`).getTime();
+    if (at > now) out.push({ id: hashKey('inr|' + p.id + '|' + r.next), at, keys: '', title: t('inrRemTitle'), body: t('inrRemBody')(p.name), person: p.name, timeLabel: fmtTime(rm.dayTime), lblHeader: t('inrRemTitle') });
+    if (rm.prev) {
+      const pat = new Date(`${addDays(r.next, -1)}T${rm.prevTime}:00`).getTime();
+      if (pat > now) out.push({ id: hashKey('inrp|' + p.id + '|' + r.next), at: pat, keys: '', title: t('inrPrevTitle'), body: t('inrPrevBody')(p.name, fmtDate(r.next, { weekday: 'long', day: 'numeric', month: 'long' }), fmtTime(rm.dayTime)), person: p.name, timeLabel: fmtTime(rm.prevTime), lblHeader: t('inrPrevTitle') });
+    }
   }
   return out.sort((a, b) => a.at - b.at).slice(0, 450);
 }
@@ -2941,7 +3012,9 @@ window.nativeMark = keys => {
   save(); tab = 'today'; viewDate = null; render(); toast(t('doseLogged'));
 };
 window.nativeVoiceResult = r => { if (r === 'missing') toast(t('voiceMissing')); else if (r === 'noengine') toast(t('voiceNoEngine')); };
-window.nativeResume = () => { S = load(); applyPendingMarks(); render(); checkReminders(); syncNative(); famSync(true); };
+let appInBackground = false;
+window.nativePause = () => { appInBackground = true; };
+window.nativeResume = () => { appInBackground = false; S = load(); applyPendingMarks(); render(); checkReminders(); syncNative(); famSync(true); };
 window.nativeBack = () => {
   if (!document.getElementById('confirm').classList.contains('hidden')) { document.getElementById('confirmNo').click(); return true; }
   if (!document.getElementById('modal').classList.contains('hidden')) { closeModal(); return true; }
@@ -2964,7 +3037,7 @@ syncNative();
 famSync(true);
 setInterval(() => {
   checkReminders();
-  famSync();
+  if (!document.hidden && !appInBackground) famSync();
   if (tab === 'today' && document.getElementById('modal').classList.contains('hidden') && document.getElementById('confirm').classList.contains('hidden')) renderToday();
 }, 30000);
 </script>

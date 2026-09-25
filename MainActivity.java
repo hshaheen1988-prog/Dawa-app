@@ -154,6 +154,13 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        // Stop family syncing while the app is off screen (saves data and battery)
+        if (pageReady) web.evaluateJavascript("window.nativePause && window.nativePause()", null);
+        super.onPause();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FILE_REQUEST && fileCallback != null) {

@@ -11,8 +11,13 @@ import android.speech.tts.TextToSpeech;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -37,7 +42,7 @@ public class Bridge {
 
     @JavascriptInterface
     public int version() {
-        return 3;
+        return 4;
     }
 
     /** Server settings + this device's credentials for family sharing. */
@@ -213,6 +218,27 @@ public class Bridge {
     }
 
     /** Shares text (backup, doctor report) via WhatsApp, email, Drive... */
+    /** Saves a backup file into Downloads/Dawa (Android 10+). Returns false so the app can fall back to sharing. */
+    @JavascriptInterface
+    public boolean saveFile(String name, String content) {
+        if (Build.VERSION.SDK_INT < 29) return false;
+        try {
+            ContentValues v = new ContentValues();
+            v.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+            v.put(MediaStore.MediaColumns.MIME_TYPE, "application/json");
+            v.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Dawa");
+            Uri uri = activity.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+            if (uri == null) return false;
+            try (OutputStream os = activity.getContentResolver().openOutputStream(uri)) {
+                if (os == null) return false;
+                os.write(content.getBytes(StandardCharsets.UTF_8));
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @JavascriptInterface
     public void share(String title, String content) {
         activity.runOnUiThread(() -> {

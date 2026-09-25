@@ -7,22 +7,77 @@
     android:padding="14dp"
     android:background="@drawable/widget_bg">
 
-    <TextView
-        android:id="@+id/w_title"
+    <LinearLayout
+        android:id="@+id/w_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="#D9FFFFFF"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_stat"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/w_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/w_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/w_prog"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
+        android:max="100"
+        android:progress="0"
+        android:progressBackgroundTint="#40FFFFFF"
+        android:progressTint="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/w_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="#FDE68A"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/w_row1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#1FFFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -31,53 +86,169 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/w_time"
+                android:id="@+id/w_time1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/w_name"
+                android:id="@+id/w_name1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="3"
-                android:textColor="#FFFFFF"
+                android:maxLines="2"
+                android:textColor="#F2FFFFFF"
                 android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/w_person"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#CCFFFFFF"
-                android:textSize="12sp"
-                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/w_take"
+            android:id="@+id/w_chk1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/widget_btn"
-            android:paddingStart="16dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="10dp"
+            android:gravity="center"
+            android:minWidth="44dp"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="✓"
+            android:textColor="#0F766E"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/w_row2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#1FFFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/w_time2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/w_name2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#F2FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/w_chk2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/widget_btn"
+            android:gravity="center"
+            android:minWidth="44dp"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="✓"
+            android:textColor="#0F766E"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/w_row3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:background="#1FFFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/w_time3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/w_name3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="#F2FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/w_chk3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/widget_btn"
+            android:gravity="center"
+            android:minWidth="44dp"
+            android:minHeight="40dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="✓"
             android:textColor="#0F766E"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/w_next"
+        android:id="@+id/w_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/w_more"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="#B3FFFFFF"
+        android:textColor="#CCFFFFFF"
         android:textSize="12sp"
         android:visibility="gone" />
 </LinearLayout>

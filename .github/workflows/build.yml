@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:     # Actions → Build APK → Run workflow → pick a branch (builds without publishing)
 
 permissions:
   contents: write
@@ -23,6 +23,20 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      # The signing key lives only in GitHub Secrets (Settings → Secrets and variables → Actions)
+      - name: Restore signing key
+        env:
+          KS: ${{ secrets.DAWA_KEYSTORE_B64 }}
+          PASS: ${{ secrets.DAWA_KEY_PASS }}
+        run: |
+          if [ -z "$KS" ] || [ -z "$PASS" ]; then
+            echo "::error::Missing secrets DAWA_KEYSTORE_B64 / DAWA_KEY_PASS — add them in Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          echo "$KS" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/release.jks"
+          keytool -list -keystore "$RUNNER_TEMP/release.jks" -storepass "$PASS" -alias dawa > /dev/null
+          echo "DAWA_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
       - name: Arrange files into the Android project
         run: |
           set -e
@@ -32,8 +46,8 @@ jobs:
             for f in build*.gradle; do
               if grep -q "apply false" "$f"; then cp "$f" android/build.gradle; else cp "$f" android/app/build.gradle; fi
             done
+            if [ -f app.build.gradle ]; then cp app.build.gradle android/app/build.gradle; fi
             cp settings.gradle gradle.properties android/
-            cp dawa.jks android/app/
             cp AndroidManifest.xml $A/
             cp *.java $A/java/com/hamza/dawa/
             cp ic_launcher.xml $A/res/mipmap-anydpi-v26/
@@ -44,21 +58,30 @@ jobs:
             if [ -f widget_dose.xml ]; then cp widget_dose.xml $A/res/layout/; fi
             if [ -f widget_info.xml ]; then cp widget_info.xml $A/res/xml/; fi
           fi
+          rm -f android/app/dawa.jks
           mkdir -p android/app/src/main/assets/www
           cp index.html sw.js manifest.json icon.svg android/app/src/main/assets/www/
           find android -type f | sort
 
       - name: Build APK
+        env:
+          DAWA_KEY_PASS: ${{ secrets.DAWA_KEY_PASS }}
         run: gradle -p android assembleRelease --no-daemon --stacktrace
 
-      - run: cp android/app/build/outputs/apk/release/app-release.apk Dawa.apk
+      - name: Show signing certificate
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk Dawa.apk
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1)
+          if [ -n "$APKSIGNER" ]; then "$APKSIGNER" verify --print-certs Dawa.apk | grep -E "DN|SHA-256" || true; fi
 
       - uses: actions/upload-artifact@v4
         with:
           name: Dawa-apk
           path: Dawa.apk
 
+      # Only main publishes a release (the public download link); other branches just keep the APK as a build artifact
       - uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.${{ github.run_number }}
           name: Dawa 1.0.${{ github.run_number }}

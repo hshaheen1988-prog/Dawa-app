@@ -16,22 +16,19 @@ android {
         versionName "1.0.${runNumber}"
     }
 
-    // Fixed key so every new build installs as an update (keeps the user's data)
+    // Release key comes from GitHub Secrets (never stored in the repository)
     signingConfigs {
         dawa {
-            storeFile file('dawa.jks')
-            storePassword 'dawa1234'
+            storeFile file(System.getenv("DAWA_KEYSTORE_FILE") ?: "release.jks")
+            storePassword System.getenv("DAWA_KEY_PASS")
             keyAlias 'dawa'
-            keyPassword 'dawa1234'
+            keyPassword System.getenv("DAWA_KEY_PASS")
         }
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.dawa
-        }
-        debug {
             signingConfig signingConfigs.dawa
         }
     }
