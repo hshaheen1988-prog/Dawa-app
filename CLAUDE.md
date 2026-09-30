@@ -91,6 +91,17 @@ Each prints `ERRORS: []` when clean. Screenshots land in `tests/shots/` (git-ign
    policy URL = `PRIVACY.md` on `main`.
 6. Clinic PoC (separate from the app): the owner decides whether to implement the six UX changes listed in
    "Clinic PoC (Prototype 2) — UX review" below. Nothing is implemented yet.
+7. Later (owner postponed it, thinking stage only): add **graphify** — https://github.com/safishamsi/graphify — a
+   Claude Code skill that turns a folder (code, docs, SQL, PDFs) into a queryable knowledge graph
+   (`/graphify .`, `/graphify query "…"`). Little value for this small repo; useful once the clinic system grows.
+   - Install per its README (re-check before use): Python 3.10+, `uv tool install graphifyy` (two y's; verify the
+     exact package name, typosquat risk), then `graphify install`.
+   - Cloud sessions are ephemeral: needs the environment setup script and network access to PyPI
+     (`read_documentation` topics `environment.setup_script`, `environment.network`).
+   - Review the third-party code first. Doc/PDF/image extraction spends Claude tokens; `--code-only` avoids that.
+   - Never run it on folders that contain real patient data.
+   - Reminder phrase the owner will use: «ذكّرني بأداة graphify». The agent then reads this item and proposes the
+     steps. Do not install anything without the owner's OK.
 
 ## Clinic PoC (Prototype 2) — UX review (2026-09-30)
 Notes, **not instructions**. Status: proposals only — **do not implement without the owner's OK**.
